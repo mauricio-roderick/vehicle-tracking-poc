@@ -6,7 +6,6 @@ const BrowserWindow = electron.BrowserWindow;
 
 const path = require('path');
 const favicon = require('serve-favicon');
-const routes = require('./routes/index');
 const debug = require('debug')('express-test:server');
 
 const config = require('./config'),
@@ -97,7 +96,7 @@ electronApp.on('ready', function() {
 				next();
 			});
 
-			expressApp.use('/', require('./routes/index'));
+			expressApp.use('/', require('./app/routes/index'));
 
 			// Error handler
 			expressApp.use(function (error, req, res, next) {
