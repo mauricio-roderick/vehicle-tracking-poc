@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Leaflet</title>
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+	<link rel="stylesheet" href="{{ base_url + '/stylesheets/styles.css' }}" />
+	
+</head>
+<body>
+	<div id="leaflet_map"></div>
+	<h1>{{ BASE_URL }}</h1>
+	<script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
+	<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+	<script type="text/javascript">
+		'use strict'
+		
+		var socket = new WebSocket('ws://52.91.146.12:8068'),
+		mainMap = L.map('leaflet_map').setView([14.556981, 121.034378], 13),
+		devices = {},
+		devicesData;
+
+		devicesData = [{"device":{"_id":"9d76b19e7da6dc6"},"coordinates":[121.03792190551758,14.56123774564965]},{"device":{"_id":"baaa43947fb8f3e"},"coordinates":[121.02161407470703,14.560988524222138]},{"device":{"_id":"4cc2d0270f35314"},"coordinates":[121.00873947143553,14.550604047831008]},{"device":{"_id":"6fe95f6c1c476f9"},"coordinates":[121.03217124938965,14.544788527634964]},{"device":{"_id":"bb1c5a15139d847"},"coordinates":[121.0374927520752,14.555505581583732]},{"device":{"_id":"6dec8457b0c443a"},"coordinates":[121.02161407470703,14.555339429679785]},{"device":{"_id":"02df1041037e604"},"coordinates":[121.04959487915038,14.551933288080491]},{"device":{"_id":"12ec866fb357911"},"coordinates":[121.04882240295409,14.560905450350399]},{"device":{"_id":"2f42b0dd488435d"},"coordinates":[121.04066848754883,14.543542324808532]},{"device":{"_id":"4799202de1a547a"},"coordinates":[121.02187156677245,14.5408837352772]},{"device":{"_id":"b9bb8abe40b39e3"},"coordinates":[121.03062629699707,14.556419414819212]},{"device":{"_id":"90781fb8f2e65f8"},"coordinates":[121.02796554565431,14.570292599833408]},{"device":{"_id":"007845baaf3b283"},"coordinates":[121.03903770446776,14.571704791275002]}];
+
+		L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+		    id: 'rmauricio.0jhf51cc',
+		    attribution: '',
+		    accessToken: 'pk.eyJ1Ijoicm1hdXJpY2lvIiwiYSI6ImNpcWJ1anZ0ODAwcnJmb25lYm45a3VvMTQifQ.R5nMyg7GXh37uXzDzTgY7w'
+		}).addTo(mainMap);
+
+		socket.onopen = function (event) {
+			console.log('Connected!');
+
+			socket.onmessage = function (event){
+				let data = event.data,
+				deviceId = data.device,
+				coordinates = data.coordinates;
+
+				if (deviceId && devices[deviceId]) {
+					devices[deviceId].setLatLng(coordinates);
+				}
+				else {
+					console.log(JSON.parse(data))
+					addMarker(JSON.parse(data));
+				}
+			};
+		}
+
+		function addMarker(item) {
+
+			let carIcon = L.icon({
+			    iconUrl: './images/icon-1.png',
+			    iconRetinaUrl: './images/icon-1.png',
+			    iconSize: [48, 48],
+			    iconAnchor: [22, 94],
+			    popupAnchor: [-3, -76],
+			    shadowAnchor: [22, 94]
+			}),
+			options = {
+				icon: carIcon
+			},
+			coordinates = {
+				lat: item.coordinates[1],
+				lng: item.coordinates[0]	
+			};
+
+			devices[item.device._id] = L.marker(coordinates)
+											.addTo(mainMap)
+											.bindPopup(`<b>${item.device._id}</b>`);
+		}
+
+		devicesData.forEach(addMarker);
+	</script>
+</body>
+</html>
