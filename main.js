@@ -18,7 +18,7 @@ var async 	 = require('async'),
 	http 	 = require('http');
 
 electronApp.on('window-all-closed', function() {
-	if (process.platform != 'darwin') {
+	if (process.platform !== 'darwin') {
 		electronApp.quit();
 	}
 });
@@ -107,7 +107,7 @@ electronApp.on('ready', function() {
 					});
 				}
 				else {
-					console.log(error.stack)
+					console.log(error.stack);
 					res.status(500).json({
 						message: 'An unexpected error has occurred. Please contact support.'
 					});
@@ -132,7 +132,7 @@ electronApp.on('ready', function() {
 		});
 		httpServer.on('listening', () => {
 			console.log(`Server listening on port ${config.port}`);
-			result.mainWindow.loadURL(`${BASE_URL}/index`)
+			result.mainWindow.loadURL(`${BASE_URL}/index`);
 			// result.mainWindow.toggleDevTools();
 		});
 		httpServer.once('close', () => {

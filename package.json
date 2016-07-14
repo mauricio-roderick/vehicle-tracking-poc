@@ -28,6 +28,19 @@
     "swig": "^1.4.2"
   },
   "devDependencies": {
-    "electron-prebuilt": "^0.36.9"
+    "electron-prebuilt": "^0.36.9",
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-csslint": "^0.3.0",
+    "gulp-cssnano": "^2.1.2",
+    "gulp-jshint": "^2.0.1",
+    "gulp-json-lint": "^0.1.0",
+    "gulp-livereload": "^3.8.1",
+    "gulp-mocha": "^2.2.0",
+    "gulp-nodemon": "^2.0.7",
+    "gulp-notify": "^2.2.0",
+    "gulp-plumber": "^1.1.0",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-uglify": "^1.5.3"
   }
 }
