@@ -1,20 +1,19 @@
 'use strict';
 
-const electron = require('electron');
-const electronApp = electron.app;
-const BrowserWindow = electron.BrowserWindow;
-
-const path = require('path');
 const favicon = require('serve-favicon');
 const debug = require('debug')('express-test:server');
 
-const config = require('./config'),
+const config = require('./config/config'),
 	BASE_URL = `http://127.0.0.1:${config.port}`;
 
-var async 	 = require('async'),
-	mongoose = require('mongoose'),
-	express  = require('express'),
-	http 	 = require('http');
+var electron 		= require('electron'),
+	electronApp 	= electron.app,
+	BrowserWindow 	= electron.BrowserWindow,
+	async 	 		= require('async'),
+	mongoose 		= require('mongoose'),
+	express  		= require('express'),
+	electronConfig  = require('./config/electronConfig'),
+	http 	 		= require('http');
 
 electronApp.on('window-all-closed', function() {
 	if (process.platform !== 'darwin') {
@@ -68,6 +67,8 @@ electronApp.on('ready', function() {
 				width: 640,
 				height: 400
 			});
+
+			electronConfig.setAppMenu();
 
 			done(null, mainWindow);
 		},
