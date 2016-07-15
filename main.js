@@ -23,43 +23,38 @@ electronApp.on('window-all-closed', function() {
 
 electronApp.on('ready', function() {
 	async.series({
-		// mongodb: (done) => {
-		// 	var db = mongoose.connection;
+		mongodb: (done) => {
+			var db = mongoose.connection;
 
-		// 	db.once('open', () => {
-		// 		console.log('Connected to MongoDB Server.');
+			db.once('open', () => {
+				console.log('Connected to MongoDB Server.');
 
-		// 		require('./app/models/bot.model.js');
-		// 		done(null, db);
-		// 	});
+				require('./app/models/gps.model.js');
+				done(null, db);
+			});
 
-		// 	db.once('close', () => {
-		// 		mongoose.disconnect(() => {
-		// 			console.log('MongoDB Connection Closed.');
-		// 		});
-		// 	});
+			db.once('close', () => {
+				mongoose.disconnect(() => {
+					console.log('MongoDB Connection Closed.');
+				});
+			});
 
-		// 	console.log('Connecting to MongoDB Server...');
+			console.log('Connecting to MongoDB Server...');
 
-		// 	let connectWithRetry = () => {
-		// 		mongoose.connect(config.mongo.url, {
-		// 			mongos: {
-		// 				ssl: true,
-		// 				sslValidate: true,
-		// 				sslCA: [config.mongo.key]
-		// 			}
-		// 		}, (error) => {
-		// 			if (error) {
-		// 				console.error('Failed to connect to mongo on startup - retrying in 5 sec', error);
-		// 				setTimeout(connectWithRetry, 5000);
-		// 			}
-		// 		});
-		// 	};
+			let connectWithRetry = () => {
+				mongoose.connect(config.mongo.url, {}, (error) => {
+					if (error) {
+						console.error('Failed to connect to mongo on startup - retrying in 5 sec', error);
+						setTimeout(connectWithRetry, 5000);
+					}
+				});
+			};
 
-		// 	connectWithRetry();
-		// },
+			connectWithRetry();
+		},
 		mainWindow: (done) => {
 			let mainWindow = new BrowserWindow({
+				title: config.app.title,
 				autoHideMenuBar: true,
 				webPreferences: {
 					nodeIntegration: false
@@ -94,6 +89,7 @@ electronApp.on('ready', function() {
 			
 			expressApp.use(function (req, res, next) {
 				res.locals.base_url = BASE_URL;
+				res.locals.gateway = config.gateway;
 				next();
 			});
 

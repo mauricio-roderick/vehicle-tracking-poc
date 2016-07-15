@@ -4,37 +4,74 @@ var mongoose     = require('mongoose'),
 	Schema       = mongoose.Schema;
 
 var gpsSchema = new Schema({
-	name: {
+	device: {
 		type: String,
+		ref: 'Device',
 		trim: true
 	},
-	user_id: {
-		type: String,
-		trim: true
+	mock_id: {
+		type: String
 	},
-	instance: {
-		type: String,
-		trim: true
+	timestamp: {
+		type: Date,
 	},
-	port: {
+	speed: {
 		type: Number
 	},
-	protocol: {
-		type: String,
+	coordinates: {
+		lat: {
+			type: Number
+		},
+		lng: {
+			type: Number
+		}
+	},
+	lat_dir: {
+		type: String
+	},
+	lng_dir: {
+		type: String
+	},
+	altitude: {
+		type: Number,
 		trim: true
 	},
-	topic: {
-		type: String,
-		trim: true
+	address: {
+		country: {
+			type: String
+		},
+		city: {
+			type: String
+		},
+		baranggay: {
+			type: String
+		},
+		street: {
+			type: String
+		},
+		postal_code: {
+			type: String
+		}
 	},
-	frequency: {
-		type: Number
-	},
-	multiplier: {
-		type: Number
+	weather: {
+		temperature: {
+			type: Number
+		},
+		humidity: {
+			type: Number
+		},
+		windSpeed: {
+			type: Number
+		},
+		summary: {
+			type: String
+		},
+		precip_intensity: {
+			type: String
+		}
 	}
 });
 
-gpsSchema.index({name: 1, user_id: 1}, {unique: true});
+// gpsSchema.index({name: 1, user_id: 1}, {unique: true});
 
-mongoose.model('Gps', gpsSchema, 'gps');
+mongoose.model('Gps', gpsSchema, 'ccdGps');
