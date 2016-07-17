@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+	<link rel="stylesheet" href="{{ base_url + '/stylesheets/styles.css' }}" />
+	
+</head>
+<body>
+	<div id="leaflet_map"></div>
+	<script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+	<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+	<script type="text/javascript">
+		'use strict'
+
+		var socket = new WebSocket('ws://52.91.146.12:8068'),
+			mainMap = L.map('leaflet_map').setView([14.556981, 121.034378], 13),
+			devices = {},
+			gateway,
+			devicesData;
+
+		gateway = {{ JSON.stringify(gateway) }};
+		devicesData = {{ JSON.stringify(gps) }};
+
+		L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+		    id: 'rmauricio.0jhf51cc',
+		    attribution: '',
+		    accessToken: 'pk.eyJ1Ijoicm1hdXJpY2lvIiwiYSI6ImNpcWJ1anZ0ODAwcnJmb25lYm45a3VvMTQifQ.R5nMyg7GXh37uXzDzTgY7w'
+		}).addTo(mainMap);
+
+		socket.onopen = function (event) {
+			console.log('Connected!');
+
+			socket.onmessage = function (event){
+				let data = event.data,
+				deviceId = data.device,
+				coordinates = data.coordinates;
+
+				if (deviceId && devices[deviceId]) {
+					devices[deviceId].setLatLng(coordinates);
+				}
+				else {
+					addMarker(JSON.parse(data));
+				}
+			};
+		}
+
+		function addMarker(item) {
+			let carIcon = L.icon({
+			    iconUrl: './images/icon-1.png',
+			    iconRetinaUrl: './images/icon-1.png',
+			    iconSize: [48, 48],
+			    iconAnchor: [22, 94],
+			    popupAnchor: [-3, -76],
+			    shadowAnchor: [22, 94]
+			}),
+			options = {
+				icon: carIcon
+			},
+			deviceId = item.mock_id	|| device.id;
+			console.log(item)
+			devices[deviceId] = L.marker(item.coordinates)
+											.addTo(mainMap)
+											.bindPopup(`<b>${deviceId}</b>`);
+		}
+
+		devicesData.forEach(addMarker);
+	</script>
+</body>
+</html>

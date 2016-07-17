@@ -1,0 +1,50 @@
+{
+  "name": "electron-with-express",
+  "description": "Demonstrates spawning Express from Electron and using it to serve content",
+  "version": "0.0.1",
+  "main": "main.js",
+  "authors": [
+    "Frank Hale <frankhale@gmail.com>"
+  ],
+  "license": "GPL-3.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./start-electron.js",
+    "build": "rm -rf public/dist/ && npm run build:dar && npm run build:lin && npm run build:win",
+    "build:lin": "electron-packager . gps --platform=linux --arch=x64 --out=public/dist --asar --overwrite",
+    "build:win": "electron-packager . gps --platform=win32 --arch=x64 --out=public/dist --asar --overwrite",
+    "build:dar": "electron-packager . gps --platform=darwin --arch=x64 --out=public/dist --asar --overwrite"
+  },
+  "dependencies": {
+    "async": "^2.0.0",
+    "body-parser": "~1.15.0",
+    "consolidate": "^0.14.1",
+    "cookie-parser": "~1.4.1",
+    "debug": "~2.2.0",
+    "express": "~4.13.4",
+    "jquery": "^3.1.0",
+    "mongoose": "^4.5.4",
+    "morgan": "~1.7.0",
+    "serve-favicon": "~2.3.0",
+    "swig": "^1.4.2"
+  },
+  "devDependencies": {
+    "chance": "^1.0.3",
+    "electron-prebuilt": "^0.36.9",
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-csslint": "^0.3.0",
+    "gulp-cssnano": "^2.1.2",
+    "gulp-jshint": "^2.0.1",
+    "gulp-json-lint": "^0.1.0",
+    "gulp-livereload": "^3.8.1",
+    "gulp-mocha": "^2.2.0",
+    "gulp-nodemon": "^2.0.7",
+    "gulp-notify": "^2.2.0",
+    "gulp-plumber": "^1.1.0",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-uglify": "^1.5.3",
+    "request": "^2.73.0",
+    "websocket": "^1.0.23"
+  }
+}
