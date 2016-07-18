@@ -6,11 +6,10 @@ var mongoose     = require('mongoose'),
 var gpsSchema = new Schema({
 	device: {
 		type: String,
-		ref: 'Device',
 		trim: true
 	},
-	mock_id: {
-		type: String
+	device_info: {
+		type: Schema.Types.Mixed
 	},
 	timestamp: {
 		type: Date,
