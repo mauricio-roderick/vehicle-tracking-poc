@@ -5,7 +5,7 @@ var request = require('request'),
 	Chance = require('chance'),
 	chance = new Chance(Math.random()),
 	mapData = require('./map-data.json'),
-	config = require('../config/config').gateway,
+	demo = require('../config/config').demo,
 	requestData = {
 		'device': '567827489028376',
 		'is_data': true,
@@ -25,12 +25,26 @@ var request = require('request'),
 	};
 
 async.forEachOf(mapData.features, (feature, key, done) => {
-	let url = `http://${config.instance}.reekoh.com:${config.port}/${config.topic}`,
-		d = new Date();
+	let url = `http://${demo.instance}.reekoh.com:${demo.port}/${demo.topic}`,
+		d = new Date(),
+		name_prefix_params = {
+			length: 3,
+			pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+		},
+		name_prefix = chance.string(name_prefix_params),
+		name_num_params = {
+			min: 100, 
+			max: 999
+		},
+		name_num = chance.integer(name_num_params);
+
 
 	requestData.coordinates = feature.geometry.coordinates;
 	requestData.dtm = d.toJSON();
-	requestData.mock_id = chance.hash();
+	requestData.device_info = {
+		_id: chance.hash(),
+		name: `${name_prefix} ${name_num}`
+	};
 	
 	request.post({
 		url: url,
