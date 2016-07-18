@@ -32,15 +32,14 @@
 			console.log('Connected!');
 
 			socket.onmessage = function (event){
-				let data = event.data,
-				deviceId = data.device,
-				coordinates = data.coordinates;
-
-				if (deviceId && devices[deviceId]) {
-					devices[deviceId].setLatLng(coordinates);
+				let data = JSON.parse(event.data),
+					coordinates = data.coordinates;
+				
+				if (typeof devices[data.device_info._id] !== 'undefined') {
+					devices[data.device_info._id].setLatLng(coordinates);
 				}
 				else {
-					addMarker(JSON.parse(data));
+					addMarker(data);
 				}
 			};
 		}
@@ -57,11 +56,31 @@
 			options = {
 				icon: carIcon
 			},
-			deviceId = item.mock_id	|| device.id;
-			console.log(item)
-			devices[deviceId] = L.marker(item.coordinates)
+			addressDtl = ['street', 'baranggay', 'city', 'country', 'postal_code'],
+			weatherDtl = {
+				'temperature': '&deg; C', 
+				'precipitation': '%', 
+				'humidity': '%', 
+				'wind': 'mph'
+			},
+			popup = '';
+			
+			popup = `<b>${item.device_info.name}</b><br/>`;
+			addressDtl.forEach((i) => {
+				popup += `${item.address[i]} `;
+			});
+			
+			item.weather.precipitation *= 100;
+			item.weather.humidity *= 100;
+
+			popup += `<br/><br/>`;
+			Object.keys(weatherDtl).forEach((i) => {
+				popup += `<div>${i}: ${item.weather[i]} ${weatherDtl[i]}</div>`;
+			});
+
+			devices[item.device_info._id] = L.marker(item.coordinates)
 											.addTo(mainMap)
-											.bindPopup(`<b>${deviceId}</b>`);
+											.bindPopup(popup);
 		}
 
 		devicesData.forEach(addMarker);
