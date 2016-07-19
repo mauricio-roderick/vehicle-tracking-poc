@@ -6,7 +6,7 @@ var express = require('express'),
 	Chance = require('chance'),
 	chance = new Chance(Math.random),
 	config = require('../../config/config'),
-	goSafeJson = require('../../config/go-safe-json.json'),
+	goSafeJson = require('../../config/gosafe-json.json'),
 	router = express.Router();
 	
 var mongoose = require('mongoose'),
@@ -59,7 +59,7 @@ router.get('/index', function(req, res, next) {
 	],
 	function (err, gps) {
 		let interval,
-			url = `http://${demo.instance}.reekoh.com:${demo.port}/${demo.topic}`;
+			url = `http://${demo.instance}.reekoh.com:${demo.http_port}/${demo.topic}`;
 
 		if(gps.length > 0) {
 			params.gps = gps;
@@ -82,14 +82,15 @@ router.get('/index', function(req, res, next) {
 				requestData.dtm = new Date().toJSON();
 				requestData.coordinates[1] = marker.coordinates.lat;
 				requestData.coordinates[0] = marker.coordinates.lon;
+				requestData.speed = chance.integer({min: 5, max: 20});
 				requestData.device_info = marker.device_info;
 
-				request.post({
-					url: url,
-					json: requestData
-				}, (err, response, body) => {
-					done();
-				});
+				// request.post({
+				// 	url: url,
+				// 	json: requestData
+				// }, (err, response, body) => {
+				// 	done();
+				// });
 			};
 
 			interval = setInterval(function (){

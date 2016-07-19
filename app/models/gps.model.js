@@ -72,5 +72,6 @@ var gpsSchema = new Schema({
 });
 
 // gpsSchema.index({name: 1, user_id: 1}, {unique: true});
+gpsSchema.path('timestamp').expires('7d');
 
 mongoose.model('Gps', gpsSchema, 'ccdGps');

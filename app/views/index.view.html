@@ -3,7 +3,7 @@
 <head>
 	<title></title>
 	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
-	<link rel="stylesheet" href="{{ base_url + '/stylesheets/styles.css' }}" />
+	<link rel="stylesheet" href="{{ base_url + '/css/styles.css' }}" />
 	
 </head>
 <body>
@@ -14,7 +14,7 @@
 		'use strict'
 
 		var socket = new WebSocket('ws://52.91.146.12:8068'),
-			mainMap = L.map('leaflet_map').setView([14.556981, 121.034378], 13),
+			mainMap = L.map('leaflet_map').setView([14.556981, 121.034378], 5),
 			devices = {},
 			gateway,
 			devicesData;
@@ -34,7 +34,7 @@
 			socket.onmessage = function (event){
 				let data = JSON.parse(event.data),
 					coordinates = data.coordinates;
-				
+				console.log(data)
 				if (typeof devices[data.device_info._id] !== 'undefined') {
 					devices[data.device_info._id].setLatLng(coordinates);
 				}
@@ -46,24 +46,23 @@
 
 		function addMarker(item) {
 			let carIcon = L.icon({
-			    iconUrl: './images/icon-1.png',
-			    iconRetinaUrl: './images/icon-1.png',
-			    iconSize: [48, 48],
-			    iconAnchor: [22, 94],
-			    popupAnchor: [-3, -76],
-			    shadowAnchor: [22, 94]
-			}),
-			options = {
-				icon: carIcon
-			},
-			addressDtl = ['street', 'baranggay', 'city', 'country', 'postal_code'],
-			weatherDtl = {
-				'temperature': '&deg; C', 
-				'precipitation': '%', 
-				'humidity': '%', 
-				'wind': 'mph'
-			},
-			popup = '';
+				    iconUrl: './images/car-32.png',
+				    iconRetinaUrl: './images/car-32.png',
+				    iconSize: [32, 32],
+				    iconAnchor: [16, 16],
+				    popupAnchor: [0, -15],
+				}),
+				markerOptions = {
+					icon: carIcon
+				},
+				addressDtl = ['street', 'baranggay', 'city', 'country', 'postal_code'],
+				weatherDtl = {
+					'temperature': '&deg; C', 
+					'precipitation': '%', 
+					'humidity': '%', 
+					'wind': 'mph'
+				},
+				popup = '';
 			
 			popup = `<b>${item.device_info.name}</b><br/>`;
 			addressDtl.forEach((i) => {
@@ -78,7 +77,7 @@
 				popup += `<div>${i}: ${item.weather[i]} ${weatherDtl[i]}</div>`;
 			});
 
-			devices[item.device_info._id] = L.marker(item.coordinates)
+			devices[item.device_info._id] = L.marker(item.coordinates, markerOptions)
 											.addTo(mainMap)
 											.bindPopup(popup);
 		}
