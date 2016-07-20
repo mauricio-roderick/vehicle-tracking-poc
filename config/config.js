@@ -12,7 +12,15 @@ module.exports = {
 		topic: 'reekoh/data'
 	},
 	mock_data: {
-		deviceCount: 50,
+		days_before_current: 5,
+		movement_count: {
+			min: 5,
+			max: 10
+		},
+		device_count: {
+			min: 2,
+			max: 10
+		},
 		countries: {
 			'PH' : {
 				border: {
@@ -42,7 +50,7 @@ module.exports = {
 				border: {
 					lat: {
 						max: 21.7391,
-						min: 	19.1348
+						min: 19.1348
 					},
 					lng: {
 						max: 82.5073,
@@ -61,9 +69,21 @@ module.exports = {
 						min: -103.9307
 					}
 				}
-			}
+			},
+			'AU' : {
+				border: {
+					lat: {
+						max: -25.8197,
+						min: -29.8788
+					},
+					lng: {
+						max: 151.8201,
+						min: 145.9204
+					}
+				}
+			}		
 		}
-	}
+	},
 	mock_interval: 10000,
     mongo: {
         local_url: process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/local',
