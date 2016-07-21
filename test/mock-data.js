@@ -14,7 +14,7 @@ var request = require('request'),
 	gosafeJSON = require(`${configPath}/gosafe.json`),
 	mock = config.mock_data,
 	demo = config.demo,
-	importFile = `import-${ moment().format('YYYY-MM-DD') }.json`,
+	dataImportFile = `import-${ moment().format('YYYY-MM-DD') }.json`,
 	countryDevices = {},
 	data = [],
 	dataType = (process.argv.length >= 3) ? process.argv[2] : 'pbi'; // pbi = powerBI
@@ -67,7 +67,7 @@ var generateDeviceMovement = (device) => {
 	return deviceMovement;
 }
 
-Object.keys(mock.countries).forEach(function (country) {
+async.eachLimit(Object.keys(mock.countries), 1, (country, next) => {
 	let numOfMarkers = chance.integer(mock.device_count),
 		numOfDevicesPerDay = {
 				min: Math.floor(parseInt(numOfMarkers) / 2),
@@ -75,6 +75,9 @@ Object.keys(mock.countries).forEach(function (country) {
 		},
 		curDate = moment(),
 		startDate = moment(curDate).subtract(mock.days_before_current, 'days'),
+		countryImportFile = `${country}-${ moment().format('YYYY-MM-DD') }.json`,
+		datadataImportFile = `${ moment().format('YYYY-MM-DD') }.json`,
+		dataByCountry = [],
 		platesArray = [];
 
 	countryDevices[country] = [];
@@ -87,10 +90,8 @@ Object.keys(mock.countries).forEach(function (country) {
 		}
 
 		countryDevices[country].push({
-			device_info: {
-				_id: new mongoId,
-				name: plate,
-			}
+			_id: new mongoId,
+			name: plate,
 		});
 	}
 
@@ -105,21 +106,27 @@ Object.keys(mock.countries).forEach(function (country) {
 			let deviceMovement = generateDeviceMovement(device);
 
 			data = data.concat(deviceMovement);
+			dataByCountry = dataByCountry.concat(deviceMovement);
 		}) 
 
 		startDate.add(1, 'day');
 	}
+
+	console.log(country);
+	next();
+
+	// fs.writeFile(countryImportFile, JSON.stringify(dataByCountry), (err) => {
+	// 	if (err) throw err;
+		
+	// 	console.log(`Import file created - ${countryImportFile}`);
+	// });
+}, (err) => {
+	
+	fs.writeFile(dataImportFile, JSON.stringify(data), (err) => {
+		if (err) throw err;
+		
+		console.log(`Import file created - ${dataImportFile}`);
+	});
+
 });
-
-fs.writeFile(importFile, JSON.stringify(data), (err) => {
-	if (err) throw err;
-	console.log(data)
-	// console.log(`Import file created - ${importFile}`);
-});
-
-
-
-
-
-
 
