@@ -129,7 +129,6 @@ electronApp.on('ready', function() {
 		httpServer.on('listening', () => {
 			console.log(`Server listening on port ${config.port}`);
 			result.mainWindow.loadURL(`${BASE_URL}/index`);
-			// result.mainWindow.toggleDevTools();
 		});
 		httpServer.once('close', () => {
 			console.log('Web Server closed.');

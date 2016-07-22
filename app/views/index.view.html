@@ -14,13 +14,14 @@
 		'use strict'
 
 		var socket = new WebSocket('ws://52.91.146.12:8068'),
-			mainMap = L.map('leaflet_map').setView([14.556981, 121.034378], 5),
+			mockSocket = new WebSocket('ws://52.91.146.12:8065'),
+			mainMap = L.map('leaflet_map').setView([14.556981, 121.034378], 10),
 			devices = {},
 			gateway,
 			devicesData;
 
 		gateway = {{ JSON.stringify(gateway) }};
-		devicesData = {{ JSON.stringify(gps) }};
+		devicesData = {{ JSON.stringify(devices.concat(mockDevices)) }};
 
 		L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
 		    id: 'rmauricio.0jhf51cc',
@@ -28,34 +29,26 @@
 		    accessToken: 'pk.eyJ1Ijoicm1hdXJpY2lvIiwiYSI6ImNpcWJ1anZ0ODAwcnJmb25lYm45a3VvMTQifQ.R5nMyg7GXh37uXzDzTgY7w'
 		}).addTo(mainMap);
 
+		mockSocket.onopen = function (event) {
+			console.log('Mock socket connected!');
+
+			mockSocket.onmessage = socketOnMessage;
+		}
+
 		socket.onopen = function (event) {
 			console.log('Connected!');
 
-			socket.onmessage = function (event){
-				let data = JSON.parse(event.data),
-					coordinates = data.coordinates;
-				console.log(data)
-				if (typeof devices[data.device_info._id] !== 'undefined') {
-					devices[data.device_info._id].setLatLng(coordinates);
-				}
-				else {
-					addMarker(data);
-				}
-			};
+			socket.onmessage = socketOnMessage;
 		}
 
-		function addMarker(item) {
-			let carIcon = L.icon({
-				    iconUrl: './images/car-32.png',
-				    iconRetinaUrl: './images/car-32.png',
-				    iconSize: [32, 32],
-				    iconAnchor: [16, 16],
-				    popupAnchor: [0, -15],
-				}),
-				markerOptions = {
-					icon: carIcon
-				},
-				addressDtl = ['street', 'baranggay', 'city', 'country', 'postal_code'],
+		function socketOnMessage(event){
+			let data = JSON.parse(event.data);
+			
+			upsertDevice(data);
+		}
+
+		function generateHtmlPopup(item) {
+			let addressDtl = ['street', 'baranggay', 'city', 'country', 'postal_code'],
 				weatherDtl = {
 					'temperature': '&deg; C', 
 					'precipitation': '%', 
@@ -77,12 +70,37 @@
 				popup += `<div>${i}: ${item.weather[i]} ${weatherDtl[i]}</div>`;
 			});
 
-			devices[item.device_info._id] = L.marker(item.coordinates, markerOptions)
-											.addTo(mainMap)
-											.bindPopup(popup);
+			return popup;
 		}
 
-		devicesData.forEach(addMarker);
+		function upsertDevice(item) {
+			item.id = item.device_info.mock_id || item.device_info._id;
+			
+			let device = devices[item.id];
+
+			if (typeof device !== 'undefined') {
+				device.setLatLng(item.coordinates);
+				device.setPopupContent(generateHtmlPopup(item))
+			} else {
+				let carIcon = L.icon({
+					    iconUrl: './images/car-32.png',
+					    iconRetinaUrl: './images/car-32.png',
+					    iconSize: [32, 32],
+					    iconAnchor: [16, 16],
+					    popupAnchor: [0, -15],
+					}),
+					markerOptions = {
+						icon: carIcon
+					}
+
+				devices[item.id] = L.marker(item.coordinates, markerOptions)
+												.addTo(mainMap)
+												.bindPopup(generateHtmlPopup(item));
+			}
+			
+		}
+
+		devicesData.forEach(upsertDevice);
 	</script>
 </body>
 </html>
