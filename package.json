@@ -31,6 +31,8 @@
     "swig": "^1.4.2"
   },
   "devDependencies": {
+    "adal-node": "https://github.com/Reekoh/azure-activedirectory-library-for-nodejs/archive/master.tar.gz",
+    "request": "^2.73.0",
     "chance": "^1.0.3",
     "electron-prebuilt": "^0.36.9",
     "gulp": "^3.9.1",

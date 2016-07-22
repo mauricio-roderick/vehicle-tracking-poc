@@ -1,17 +1,29 @@
 'use strict';
 
-module.exports = {
+var config = {
 	app: {
 		title: 'Reekoh - GPS Tracking'
 	},
 	port: 18358,
 	demo: {
+		ip: '52.91.146.12',
 		instance: 'demo1',
-		http_port: 8056,
-		tcp_port: 8056,
+		socket_port: 8068,
 		topic: 'reekoh/data'
 	},
-	mock_data: {
+    mongo: {
+        local_url: 'mongodb://127.0.0.1:27017/local',
+        test_url: 'mongodb://reekohdev:Reekoh2016@ds015398.mlab.com:15398/reekoh-mongo-test',
+        url: process.env.MONGO_URL || 'mongodb://reekohdev:Reekoh2016@ds015398.mlab.com:15398/reekoh-mongo-test',
+    },
+	mock: {
+		topology: {
+			instance: 'demo1',
+			http_port: 8064,
+			socket_port: 8065,
+			topic: 'reekoh/data'
+		},
+		movement_interval: 2000,
 		days_before_current: 5,
 		movement_count: {
 			min: 5,
@@ -28,7 +40,7 @@ module.exports = {
 						max: 14.5570,
 						min: 14.5145
 					},
-					lng: {
+					lon: {
 						max: 121.0614,
 						min: 121.0019
 					}
@@ -40,7 +52,7 @@ module.exports = {
 						max: 44.3081,
 						min: 33.1743
 					},
-					lng: {
+					lon: {
 						max: -91.9336,
 						min: -113.0713	
 					}
@@ -52,7 +64,7 @@ module.exports = {
 						max: 21.7391,
 						min: 19.1348
 					},
-					lng: {
+					lon: {
 						max: 82.5073,
 						min: 78.4644
 					}
@@ -64,7 +76,7 @@ module.exports = {
 						max: 24.2970,
 						min: 21.4224
 					},
-					lng: {
+					lon: {
 						max: -100.0854,
 						min: -103.9307
 					}
@@ -76,18 +88,15 @@ module.exports = {
 						max: -25.8197,
 						min: -29.8788
 					},
-					lng: {
+					lon: {
 						max: 151.8201,
 						min: 145.9204
 					}
 				}
 			}		
 		}
-	},
-	mock_interval: 10000,
-    mongo: {
-        local_url: process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/local',
-        test_url: process.env.MONGO_URL || 'mongodb://reekohdev:Reekoh2016@ds015398.mlab.com:15398/reekoh-mongo-test',
-        url: process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/local',
-    }
+	}
 };
+
+config.mongo.url = config.mongo.test_url;
+module.exports = config;

@@ -4,10 +4,6 @@ var mongoose     = require('mongoose'),
 	Schema       = mongoose.Schema;
 
 var gpsSchema = new Schema({
-	device: {
-		type: String,
-		trim: true
-	},
 	device_info: {
 		type: Schema.Types.Mixed
 	},
@@ -21,7 +17,7 @@ var gpsSchema = new Schema({
 		lat: {
 			type: Number
 		},
-		lng: {
+		lon: {
 			type: Number
 		}
 	},

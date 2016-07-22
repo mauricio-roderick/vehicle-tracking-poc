@@ -13,16 +13,18 @@
 	<script type="text/javascript">
 		'use strict'
 
-		var socket = new WebSocket('ws://52.91.146.12:8068'),
-			mockSocket = new WebSocket('ws://52.91.146.12:8065'),
-			mainMap = L.map('leaflet_map').setView([14.556981, 121.034378], 10),
+		var demo = {{ JSON.stringify(demo) }},
+			mock = {{ JSON.stringify(mock) }},
+			socket = new WebSocket(`ws://${demo.ip}:${demo.socket_port}`),
+			mockSocket = new WebSocket(`ws://${demo.ip}:${mock.topology.socket_port}`),
+			mainMap = L.map('leaflet_map').setView([14.556981, 121.034378], 0),
 			devices = {},
 			gateway,
 			devicesData;
 
 		gateway = {{ JSON.stringify(gateway) }};
 		devicesData = {{ JSON.stringify(devices.concat(mockDevices)) }};
-
+		console.log(devicesData.length)
 		L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
 		    id: 'rmauricio.0jhf51cc',
 		    attribution: '',
@@ -43,7 +45,7 @@
 
 		function socketOnMessage(event){
 			let data = JSON.parse(event.data);
-			
+			console.log(data);
 			upsertDevice(data);
 		}
 
@@ -74,7 +76,7 @@
 		}
 
 		function upsertDevice(item) {
-			item.id = item.device_info.mock_id || item.device_info._id;
+			item.id = item.device_info.hasOwnProperty('mock_id') ? item.device_info.mock_id : item.device_info._id;
 			
 			let device = devices[item.id];
 

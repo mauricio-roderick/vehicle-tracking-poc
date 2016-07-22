@@ -8,6 +8,7 @@ var express = require('express'),
 	chance = new Chance(Math.random),
 	config = require('../../config/config'),
 	demo = config.demo,
+	mock = config.mock,
 	goSafeJson = require('../../config/gosafe.json'),
 	router = express.Router();
 	
@@ -63,78 +64,50 @@ router.get('/index', function(req, res, next) {
 			return res.send('Hoaa! A chalenge!');
 		}
 		
-		let params = result;
+		let params = result,
+			url = `http://${mock.topology.instance}.reekoh.com:${mock.topology.http_port}/${mock.topology.topic}`,
+			deviceMarkers = [],
+			interval,
+			moveDevice = function (marker, done){
+
+				let increment = chance.floating({
+						max: 0.001,
+						min: 0.0001
+					});
+
+				marker.device = marker.device_info._id;
+				marker.coordinates.lat += chance.bool() ? -(increment) : (increment);
+				marker.coordinates.lon += chance.bool() ? -(increment) : (increment);
+				marker.timestamp = new Date().toJSON();
+				marker.speed = chance.integer({min: 20, max: 30});
+
+				deviceMarkers[marker.mock_id] = marker;
+
+				request.post({
+					url: url,
+					json: marker
+				}, (err, response, body) => {
+					done();
+				});
+			};
+
+		if(result.mockDevices.length) {
+			interval = setInterval(function (){
+				async.eachLimit(result.mockDevices, 10, moveDevice, () => {
+					console.log('Updated device locations.');
+				});
+			}, config.mock.movement_interval);
+		} else {
+			console.log('No mock devices found');
+		}
+
+
+		params.mock = mock;
+		params.demo = demo;
 
 		res.render('index', params);
 	});
-
-	// Gps.aggregate(,
-	// function (err, gps) {
-	// 	let interval,
-	// 		url = `http://${demo.instance}.reekoh.com:${demo.http_port}/${demo.topic}`;
-
-	// 	params.gps = gps;
-		
-	// 	if(gps.length > 0) {
-
-	// 		gps = gps.map((gpsItem, i) => {
-	// 			gpsItem._index = i;
-	// 			return gpsItem;
-	// 		});
-
-	// 		let curDate = moment();
-	// 		let gps_ = gps.map((gpsItem, i) => {
-	// 			let date_ = moment(curDate).add(i, 'days'),
-	// 			newItem = {
-	// 				'Vehicle': gpsItem.device_info.name,
-	// 				'Country': chance.pickone(['PH', 'AU', 'CA', 'US']),
-	// 				'Speed': gpsItem.speed,
-	// 				'Timestamp': date_.toISOString(),
-	// 				'Date': date_.format('MMM D'),
-	// 			};
-
-	// 			// console.log(newItem);
-	// 			return newItem;
-	// 		});
-	// 		console.log(JSON.stringify(gps_));
-
-
-	// 		let moveMarkers = function (marker, done){
-	// 			let requestData = JSON.parse(JSON.stringify(goSafeJson)),
-	// 				increment = chance.floating({
-	// 					max: 0.001,
-	// 					min: 0.0001
-	// 				});
-
-	// 			gps[marker._index].coordinates.lat += chance.bool() ? -(increment) : (increment);
-	// 			gps[marker._index].coordinates.lon += chance.bool() ? -(increment) : (increment);
-
-	// 			requestData.dtm = new Date().toJSON();
-	// 			requestData.coordinates[1] = marker.coordinates.lat;
-	// 			requestData.coordinates[0] = marker.coordinates.lon;
-	// 			requestData.speed = chance.integer({min: 5, max: 20});
-	// 			requestData.device_info = marker.device_info;
-
-	// 			request.post({
-	// 				url: url,
-	// 				json: requestData
-	// 			}, (err, response, body) => {
-	// 				done();
-	// 			});
-	// 		};
-
-	// 		interval = setInterval(function (){
-	// 			async.eachLimit(gps, 10, moveMarkers, () => {
-	// 				console.log('Updated full gps list.');
-	// 			});
-	// 		}, config.mock_interval);
-	// 	}
-	// 	else {
-	// 		console.log('No gps found.');
-	// 	}	
-
-	// 	res.render('index', params);
-	// });
+	
 });
 
 module.exports = router;

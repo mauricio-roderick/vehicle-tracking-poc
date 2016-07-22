@@ -9,15 +9,18 @@ var request = require('request'),
 	Chance = require('chance'),
 	chance = new Chance(),
 	configPath = '../config',
+	PowerBITask = require('./powerBITask'),
 	config = require(`${configPath}/config.js`),
-	mapData = require(`${configPath}/geojson.json`),
 	gosafeJSON = require(`${configPath}/gosafe.json`),
-	mock = config.mock_data,
+	mongoDbItem = require(`${configPath}/mongoDbItem.json`),
+	mock = config.mock,
 	demo = config.demo,
 	dataImportFile = `import-${ moment().format('YYYY-MM-DD') }.json`,
 	countryDevices = {},
 	data = [],
-	dataType = (process.argv.length >= 3) ? process.argv[2] : 'pbi'; // pbi = powerBI
+	powerBiData = [],
+	mongoDbData = [],
+	importType = (process.argv.length >= 3) ? process.argv[2] : '';
 
 var generatePlateName = () => {
 	let platePrefixParams = {
@@ -36,32 +39,45 @@ var generatePlateName = () => {
 }
 
 var generateDeviceMovement = (device) => {
-	let deviceMovement = [],
+	let deviceMovement = {
+			pbi: [],
+			mongo: []
+		},
 		ctr = chance.integer(mock.movement_count),
-		deviceData;
+		pbi, mongo;
 
 	device.date.hour(1);
 
 	for(; ctr > 0; ctr--) {
 		let timestamp = device.date.add('30', 'seconds');
 
-		if(dataType == 'pbi')
-		{
-			deviceData = {
-				"Vehicle": device.name,
-				"Country": device.country,
-				"Speed": 16,
-				"Timestamp": timestamp.toISOString(),
-				"Date": timestamp.format('MMM D')
-			}
-		}
-		else {
-			deviceData = {
-				test: 123
-			}
-		}
+		pbi = {
+			"Vehicle": device.name,
+			"Country": device.country,
+			"Speed": 16,
+			"Timestamp": timestamp.toISOString(),
+			"Date": timestamp.format('MMM D')
+		};
 
-		deviceMovement.push(deviceData);
+		deviceMovement.pbi.push(pbi);
+		
+		mongo = JSON.parse(JSON.stringify(mongoDbItem));
+		mongo.device_info.mock_id = device.mock_id;
+		mongo.device_info.name = device.name;
+		mongo.timestamp = timestamp.toISOString();
+		mongo.speed = chance.floating({
+			min: 20,
+			max: 30,
+			fixed: 2
+		});
+		mongo.coordinates = {
+			lat: chance.floating(mock.countries[device.country].border.lat),
+			lon: chance.floating(mock.countries[device.country].border.lon)
+		};
+
+		delete mongo._id;
+
+		deviceMovement.mongo.push(mongo);
 	}
 
 	return deviceMovement;
@@ -77,7 +93,6 @@ async.eachLimit(Object.keys(mock.countries), 1, (country, next) => {
 		startDate = moment(curDate).subtract(mock.days_before_current, 'days'),
 		countryImportFile = `${country}-${ moment().format('YYYY-MM-DD') }.json`,
 		datadataImportFile = `${ moment().format('YYYY-MM-DD') }.json`,
-		dataByCountry = [],
 		platesArray = [];
 
 	countryDevices[country] = [];
@@ -90,7 +105,7 @@ async.eachLimit(Object.keys(mock.countries), 1, (country, next) => {
 		}
 
 		countryDevices[country].push({
-			_id: new mongoId,
+			mock_id: new mongoId,
 			name: plate,
 		});
 	}
@@ -105,28 +120,119 @@ async.eachLimit(Object.keys(mock.countries), 1, (country, next) => {
 			
 			let deviceMovement = generateDeviceMovement(device);
 
-			data = data.concat(deviceMovement);
-			dataByCountry = dataByCountry.concat(deviceMovement);
-		}) 
+			powerBiData = powerBiData.concat(deviceMovement.pbi);
+			mongoDbData = mongoDbData.concat(deviceMovement.mongo);
+		});
 
 		startDate.add(1, 'day');
 	}
 
-	console.log(country);
 	next();
 
-	// fs.writeFile(countryImportFile, JSON.stringify(dataByCountry), (err) => {
-	// 	if (err) throw err;
-		
-	// 	console.log(`Import file created - ${countryImportFile}`);
-	// });
 }, (err) => {
-	
-	fs.writeFile(dataImportFile, JSON.stringify(data), (err) => {
-		if (err) throw err;
-		
-		console.log(`Import file created - ${dataImportFile}`);
-	});
 
+	let pbiDataClone = JSON.parse(JSON.stringify(powerBiData)),
+		mongoDataClone = JSON.parse(JSON.stringify(mongoDbData)),
+		pbiBatchData = [],
+		mongoBatchData = [];
+	
+	async.waterfall([
+		(next) => {
+			async.whilst(
+			    () => { return (pbiDataClone.length > 0); },
+			    (cb) => {
+			        pbiBatchData.push(pbiDataClone.splice(0, 100));
+			        mongoBatchData.push(mongoDataClone.splice(0, 100));
+			        cb();
+			    },
+			    (err) => {
+			        next(err);
+			    }
+			);
+		},
+		(next) => {
+			let pbiOptions = {
+				'tenant': 'reekoh.com',
+				'username': 'demo@reekoh.com',
+				'password': 'Dunu6897',
+				'client_id': 'a52311aa-21d0-4065-acca-beb9420e5640',
+				'client_secret': 'htThkxpBwMQgFDfUcqHFaXOunIaTSWM04a+s/LUF9qk=',
+				'dataset': 'ac008b86-24ff-4bed-8177-5c6b4412fa4d',
+				'table': 'GPS'
+			},
+			powerBITask = new PowerBITask(pbiOptions);
+
+			powerBITask.init(function (bpiError) {
+				if(bpiError) {
+					return next(bpiError);
+				} 
+
+				async.eachLimit(pbiBatchData, 2, (batchItem, cb) => {
+					powerBITask.send(batchItem, function (error) {
+						cb(error);
+					});
+				}, (err) => {
+					if(! err) {
+						console.log('Created Powerbi records.')
+					}
+					next(err);
+				})
+			});
+		},
+		(next) => {
+			let mongoose = require('mongoose'),
+				db = mongoose.connection;
+
+			db.once('open', () => {
+				console.log('Connected to MongoDB Server.');
+				require('../app/models/gps.model.js');
+				
+				let Gps = mongoose.model('Gps');
+
+				async.eachLimit(mongoBatchData, 1, (batchItem, cb) => {
+					Gps.create(batchItem, () => {
+						console.log('inserted mongodb batch');
+						cb();
+					});
+				}, (err) => {
+					if(! err) {
+						console.log('Mongo Db Powerbi records.')
+					}
+					next(err);
+				})
+			});
+
+			db.once('close', () => {
+				mongoose.disconnect(() => {
+					console.log('MongoDB Connection Closed.');
+				});
+			});
+
+			console.log('Connecting to MongoDB Server...');
+
+			let connectWithRetry = () => {
+				mongoose.connect(config.mongo.url, {}, (error) => {
+					if (error) {
+						console.error('Failed to connect to mongo on startup - retrying in 5 sec', error);
+						setTimeout(connectWithRetry, 5000);
+					}
+				});
+			};
+
+			connectWithRetry();
+		}
+	], (err) => {
+		if(err) {
+			console.error(err);
+		}
+		
+		// fs.writeFile(dataImportFile, JSON.stringify(data), (err) => {
+		// 	if (err) throw err;
+			
+		// 	console.log(`Import file created - ${dataImportFile}`);
+		// });
+		
+		console.log(`Done importing ${powerBiData.length} records`);
+	})
 });
 
