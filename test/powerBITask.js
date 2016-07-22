@@ -41,6 +41,21 @@ PowerBITask.prototype = {
 			else
 				callback();
 		});
+	},
+	clearTable: function (callback) {
+		request.delete({
+			url: `https://api.powerbi.com/v1.0/myorg/datasets/${this.dataset}/tables/${this.table}/rows`,
+			auth: {
+				bearer: this.accessToken
+			}
+		}, function (error, response, body) {
+			if (error)
+				callback(error.message);
+			else if (response.statusCode !== 200)
+				callback(new Error(`HTTP ${response.statusCode} ${body.message}`));
+			else
+				callback();
+		});
 	}
 };
 

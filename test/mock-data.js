@@ -134,7 +134,8 @@ async.eachLimit(Object.keys(mock.countries), 1, (country, next) => {
 	let pbiDataClone = JSON.parse(JSON.stringify(powerBiData)),
 		mongoDataClone = JSON.parse(JSON.stringify(mongoDbData)),
 		pbiBatchData = [],
-		mongoBatchData = [];
+		mongoBatchData = [],
+		powerBITask;
 	
 	async.waterfall([
 		(next) => {
@@ -159,7 +160,8 @@ async.eachLimit(Object.keys(mock.countries), 1, (country, next) => {
 				'client_secret': 'htThkxpBwMQgFDfUcqHFaXOunIaTSWM04a+s/LUF9qk=',
 				'dataset': 'ac008b86-24ff-4bed-8177-5c6b4412fa4d',
 				'table': 'GPS'
-			},
+			};
+
 			powerBITask = new PowerBITask(pbiOptions);
 
 			powerBITask.init(function (bpiError) {
@@ -167,17 +169,26 @@ async.eachLimit(Object.keys(mock.countries), 1, (country, next) => {
 					return next(bpiError);
 				} 
 
-				async.eachLimit(pbiBatchData, 2, (batchItem, cb) => {
-					powerBITask.send(batchItem, function (error) {
-						cb(error);
-					});
-				}, (err) => {
+				powerBITask.clearTable((err) => {
 					if(! err) {
-						console.log('Created Powerbi records.')
+						console.log('Removed Power Bi records');
 					}
+
 					next(err);
-				})
+				});
 			});
+		},
+		(next) => {
+			async.eachLimit(pbiBatchData, 2, (batchItem, cb) => {
+				powerBITask.send(batchItem, function (error) {
+					cb(error);
+				});
+			}, (err) => {
+				if(! err) {
+					console.log('Created Powerbi records.')
+				}
+				next(err);
+			})
 		},
 		(next) => {
 			let mongoose = require('mongoose'),
@@ -187,19 +198,11 @@ async.eachLimit(Object.keys(mock.countries), 1, (country, next) => {
 				console.log('Connected to MongoDB Server.');
 				require('../app/models/gps.model.js');
 				
-				let Gps = mongoose.model('Gps');
-
-				async.eachLimit(mongoBatchData, 1, (batchItem, cb) => {
-					Gps.create(batchItem, () => {
-						console.log('inserted mongodb batch');
-						cb();
-					});
-				}, (err) => {
-					if(! err) {
-						console.log('Mongo Db Powerbi records.')
-					}
-					next(err);
-				})
+				let gpsModel = mongoose.model('Gps');
+				gpsModel.remove({}, (err) => {
+					console.log('Removed mongoDb records');
+					next(err, gpsModel);
+				});
 			});
 
 			db.once('close', () => {
@@ -220,6 +223,18 @@ async.eachLimit(Object.keys(mock.countries), 1, (country, next) => {
 			};
 
 			connectWithRetry();
+		},
+		(gpsModel, next) => {
+			async.eachLimit(mongoBatchData, 1, (batchItem, cb) => {
+				gpsModel.collection.insert(batchItem, { ordered: true }, () => {
+					cb();
+				});
+			}, (err) => {
+				if(! err) {
+					console.log('Mongo Db & Powerbi records.')
+				}
+				next(err);
+			})
 		}
 	], (err) => {
 		if(err) {

@@ -81,19 +81,21 @@ router.get('/index', function(req, res, next) {
 				marker.timestamp = new Date().toJSON();
 				marker.speed = chance.integer({min: 20, max: 30});
 
+				delete marker._id;
 				deviceMarkers[marker.mock_id] = marker;
 
 				request.post({
 					url: url,
 					json: marker
 				}, (err, response, body) => {
+					
 					done();
 				});
 			};
 
 		if(result.mockDevices.length) {
 			interval = setInterval(function (){
-				async.eachLimit(result.mockDevices, 10, moveDevice, () => {
+				async.eachLimit(result.mockDevices, 1, moveDevice, () => {
 					console.log('Updated device locations.');
 				});
 			}, config.mock.movement_interval);
