@@ -4,10 +4,6 @@ var mongoose     = require('mongoose'),
 	Schema       = mongoose.Schema;
 
 var gpsSchema = new Schema({
-	device: {
-		type: String,
-		trim: true
-	},
 	device_info: {
 		type: Schema.Types.Mixed
 	},
@@ -21,7 +17,7 @@ var gpsSchema = new Schema({
 		lat: {
 			type: Number
 		},
-		lng: {
+		lon: {
 			type: Number
 		}
 	},
@@ -72,5 +68,6 @@ var gpsSchema = new Schema({
 });
 
 // gpsSchema.index({name: 1, user_id: 1}, {unique: true});
+gpsSchema.path('timestamp').expires('7d');
 
 mongoose.model('Gps', gpsSchema, 'ccdGps');

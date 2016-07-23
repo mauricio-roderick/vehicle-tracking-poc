@@ -1,0 +1,35 @@
+{  
+    "device_info" : {
+        "_id" : "567827489028376", 
+        "name" : "GoSafe Test", 
+        "metadata" : {
+
+        }, 
+        "state" : {
+
+        }
+    }, 
+    "timestamp" : "2013-02-28T23:58:33.000Z", 
+    "speed" : 0, 
+    "coordinates" : {
+        "lat" : 14.5789, 
+        "lon" : 121.0167
+    }, 
+    "lat_dir" : "N", 
+    "lng_dir" : "E", 
+    "altitude" : 37, 
+    "address" : {
+        "country" : "PH", 
+        "city" : "Carmona", 
+        "baranggay" : "", 
+        "street" : "1869 P. Domingo", 
+        "postal_code" : "1009"
+    }, 
+    "weather" : {
+        "temperature" : 33.35, 
+        "humidity" : 0.6, 
+        "wind" : 1.43, 
+        "summary" : "Light Rain", 
+        "precipitation" : 0.6655
+    }
+}

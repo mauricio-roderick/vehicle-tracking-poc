@@ -3,87 +3,113 @@
 <head>
 	<title></title>
 	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
-	<link rel="stylesheet" href="{{ base_url + '/stylesheets/styles.css' }}" />
+	<link rel="stylesheet" href="{{ base_url + '/css/styles.css' }}" />
 	
 </head>
 <body>
 	<div id="leaflet_map"></div>
-	<script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+	<script src="{{ base_url + '/jquery/dist/jquery.min.js' }}"></script>
 	<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
 	<script type="text/javascript">
 		'use strict'
 
-		var socket = new WebSocket('ws://52.91.146.12:8068'),
+		var demo = {{ JSON.stringify(demo) }},
+			mock = {{ JSON.stringify(mock) }},
+			socket = new WebSocket(`ws://${demo.ip}:${demo.socket_port}`),
+			mockSocket = new WebSocket(`ws://${demo.ip}:${mock.topology.socket_port}`),
 			mainMap = L.map('leaflet_map').setView([14.556981, 121.034378], 13),
 			devices = {},
 			gateway,
 			devicesData;
 
 		gateway = {{ JSON.stringify(gateway) }};
-		devicesData = {{ JSON.stringify(gps) }};
-
+		devicesData = {{ JSON.stringify(devices.concat(mockDevices)) }};
+		
 		L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
 		    id: 'rmauricio.0jhf51cc',
 		    attribution: '',
 		    accessToken: 'pk.eyJ1Ijoicm1hdXJpY2lvIiwiYSI6ImNpcWJ1anZ0ODAwcnJmb25lYm45a3VvMTQifQ.R5nMyg7GXh37uXzDzTgY7w'
 		}).addTo(mainMap);
 
+		mockSocket.onopen = function (event) {
+			console.log('Mock socket connected!');
+
+			mockSocket.onmessage = socketOnMessage;
+		}
+
 		socket.onopen = function (event) {
 			console.log('Connected!');
 
-			socket.onmessage = function (event){
-				let data = JSON.parse(event.data),
-					coordinates = data.coordinates;
-				
-				if (typeof devices[data.device_info._id] !== 'undefined') {
-					devices[data.device_info._id].setLatLng(coordinates);
-				}
-				else {
-					addMarker(data);
-				}
-			};
+			socket.onmessage = socketOnMessage;
 		}
 
-		function addMarker(item) {
-			let carIcon = L.icon({
-			    iconUrl: './images/icon-1.png',
-			    iconRetinaUrl: './images/icon-1.png',
-			    iconSize: [48, 48],
-			    iconAnchor: [22, 94],
-			    popupAnchor: [-3, -76],
-			    shadowAnchor: [22, 94]
-			}),
-			options = {
-				icon: carIcon
-			},
-			addressDtl = ['street', 'baranggay', 'city', 'country', 'postal_code'],
-			weatherDtl = {
-				'temperature': '&deg; C', 
-				'precipitation': '%', 
-				'humidity': '%', 
-				'wind': 'mph'
-			},
-			popup = '';
+		function socketOnMessage(event){
+			let data = JSON.parse(event.data);
+			// console.log(data);
+			upsertDevice(data);
+		}
+
+		function generateHtmlPopup(item) {
+			let addressDtl = ['street', 'baranggay', 'city', 'country', 'postal_code'],
+				weatherDtl = {
+					'temperature': '&deg; C', 
+					'precipitation': '%', 
+					'humidity': '%', 
+					'wind': 'mph'
+				},
+				popup = '';
 			
 			popup = `<b>${item.device_info.name}</b><br/>`;
-			addressDtl.forEach((i) => {
-				popup += `${item.address[i]} `;
-			});
-			
-			item.weather.precipitation *= 100;
-			item.weather.humidity *= 100;
 
-			popup += `<br/><br/>`;
-			Object.keys(weatherDtl).forEach((i) => {
-				popup += `<div>${i}: ${item.weather[i]} ${weatherDtl[i]}</div>`;
-			});
+			if (! item.device_info.hasOwnProperty('mock_id')) {
+				addressDtl.forEach((i) => {
+					popup += `${item.address[i]} `;
+				});
+				
+				item.weather.precipitation *= 100;
+				item.weather.humidity *= 100;
 
-			devices[item.device_info._id] = L.marker(item.coordinates)
-											.addTo(mainMap)
-											.bindPopup(popup);
+				popup += `<br/><br/>`;
+				Object.keys(weatherDtl).forEach((i) => {
+					popup += `<div>${i}: ${item.weather[i]} ${weatherDtl[i]}</div>`;
+				});
+			}
+
+			return popup;
 		}
 
-		devicesData.forEach(addMarker);
+		function upsertDevice(item) {
+			let isMockDevice = item.device_info.hasOwnProperty('mock_id'),
+				deviceId = isMockDevice ? item.device_info.mock_id : item.device_info._id;
+			
+			let popUpContent = generateHtmlPopup(item),
+				device = devices[deviceId];
+
+			if (devices.hasOwnProperty(deviceId)) {
+				device.setLatLng(item.coordinates);
+				device.setPopupContent(popUpContent);
+			} else {
+				let iconImage = (isMockDevice) ? 'car-32.png' : 'reekoh-48-b.png',
+					carIcon = L.icon({
+					    iconUrl: `./images/${iconImage}`,
+					    iconRetinaUrl: `./images/${iconImage}`,
+					    iconSize: [32, 32],
+					    iconAnchor: [16, 16],
+					    popupAnchor: [0, -15],
+					}),
+					markerOptions = {
+						icon: carIcon,
+						zIndexOffset: (isMockDevice) ? 1 : 2
+					}
+
+				devices[deviceId] = L.marker(item.coordinates, markerOptions)
+												.addTo(mainMap)
+												.bindPopup(popUpContent);
+			}
+			
+		}
+
+		devicesData.forEach(upsertDevice);
 	</script>
 </body>
 </html>

@@ -3,107 +3,115 @@
 var express = require('express'),
 	async = require('async'),
 	request = require('request'),
+	moment = require('moment'),
 	Chance = require('chance'),
 	chance = new Chance(Math.random),
 	config = require('../../config/config'),
-	goSafeJson = require('../../config/go-safe-json.json'),
+	demo = config.demo,
+	mock = config.mock,
+	goSafeJson = require('../../config/gosafe.json'),
 	router = express.Router();
 	
 var mongoose = require('mongoose'),
 	Gps = mongoose.model('Gps');
 
 router.get('/index', function(req, res, next) {
-	let params = {},
-	demo = config.demo;
-
-	Gps.aggregate([
-		{
-			$project: {
-		        is_mock: {
-		        	$cmp: ['$device_info._id', '$device']
-		        },
-		        device: 1,
-		        device_info: 1,
-				coordinates: 1,
-				timestamp: 1,
-				address: 1,
-				weather: 1,
-		    }
-		},
-		{ 
-			$match: {
-				'is_mock' : {
-					$ne: 0
+	let groupId = '$device_info._id',
+		aggrePipeline = [
+			{ 
+				$match: {
+					'device_info.mock_id' : {
+						$exists: false
+					}
+				}
+			},
+			{ 
+				$sort: { 
+					timestamp: 1
+				} 
+			},
+			{
+				$group: {
+					_id: '$device_info._id',
+					device_info: { $first: '$device_info' },
+					coordinates: { $first: '$coordinates' },
+					timestamp: { $first: '$timestamp' },
+					address: { $first: '$address' },
+					weather: { $first: '$weather' },
+					speed: { $first: '$speed' },
 				}
 			}
-		},
-		{ 
-			$sort: { 
-				timestamp: -1
-			} 
-		},
-		{
-			$group: {
-				_id: {
-					device: '$device',
-					mock_id: '$device_info._id'
-				},
-				device: { $first: '$device' },
-				device_info: { $first: '$device_info' },
-				coordinates: { $first: '$coordinates' },
-				timestamp: { $first: '$timestamp' },
-				address: { $first: '$address' },
-				weather: { $first: '$weather' },
-			}
-		}
-	],
-	function (err, gps) {
-		let interval,
-			url = `http://${demo.instance}.reekoh.com:${demo.port}/${demo.topic}`;
+		];
 
-		if(gps.length > 0) {
-			params.gps = gps;
-
-			gps = gps.map((gpsItem, i) => {
-				gpsItem._index = i;
-				return gpsItem;
+	async.series({
+		devices: (next) => {
+			Gps.aggregate(aggrePipeline, (err, real_devices) => {
+				next(err, real_devices);
 			});
+		},
+		mockDevices: (next) => {
+			aggrePipeline[0].$match['device_info.mock_id'].$exists = true;
+			aggrePipeline[2].$group._id = '$device_info.mock_id';
 
-			let moveMarkers = function (marker, done){
-				let requestData = JSON.parse(JSON.stringify(goSafeJson)),
-					increment = chance.floating({
-						max: 0.001,
-						min: 0.0001
+			Gps.aggregate(aggrePipeline, (err, mock_devices) => {
+				next(err, mock_devices);
+			});
+		}
+	},
+	(err, result) => {
+		if(err) {
+			console.log(err);
+			return res.send('Hoaa! A chalenge!');
+		}
+		
+		let params = result,
+			url = `http://${mock.topology.instance}.reekoh.com:${mock.topology.http_port}/${mock.topology.topic}`,
+			interval,
+			moveMockDevices = () => {
+				async.mapLimit(result.mockDevices, 2, 
+					(marker, next) => {
+						let increment = chance.floating({
+								max: 0.001,
+								min: 0.0001
+							});
+
+						marker.device = marker.device_info._id;
+						marker.coordinates.lat += chance.bool() ? -(increment) : (increment);
+						marker.coordinates.lon += chance.bool() ? -(increment) : (increment);
+						marker.timestamp = new Date().toJSON();
+						marker.speed = chance.integer({min: 20, max: 30});
+
+						console.log(marker.device);
+						console.log(marker.coordinates);
+						request.post({
+							url: url,
+							json: marker
+						}, (err, response, body) => {
+							next(null, marker);
+						});
+					}, 
+					(err, mockDevices) => {
+						console.log('Updated device locations.');
+
+						result.mockDevices = mockDevices;
+						setTimeout(moveMockDevices, config.mock.movement_interval);
 					});
-
-				gps[marker._index].coordinates.lat += chance.bool() ? -(increment) : (increment);
-				gps[marker._index].coordinates.lon += chance.bool() ? -(increment) : (increment);
-
-				requestData.dtm = new Date().toJSON();
-				requestData.coordinates[1] = marker.coordinates.lat;
-				requestData.coordinates[0] = marker.coordinates.lon;
-				requestData.device_info = marker.device_info;
-
-				request.post({
-					url: url,
-					json: requestData
-				}, (err, response, body) => {
-					done();
-				});
 			};
 
-			interval = setInterval(function (){
-				async.eachLimit(gps, 10, moveMarkers, () => {
-					console.log('Updated full gps list.');
-				});
-			}, config.mock_interval);
+		if(result.mockDevices.length) {
+			console.log(`Found ${result.mockDevices.length} mock devices.`);
+
+			setTimeout(moveMockDevices, config.mock.movement_interval);			
+		} else {
+			console.log('No mock devices found');
 		}
-		else {
-			console.log('No gps found.');
-		}	
+
+		params.mock = mock;
+		params.demo = demo;
 
 		res.render('index', params);
 	});
+	
 });
 
 module.exports = router;

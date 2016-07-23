@@ -1,0 +1,331 @@
+[
+  {
+    "Vehicle": "YLD 392",
+    "Country": "AU",
+    "Speed": 6,
+    "Timestamp": "2016-07-20T07:38:03.136Z",
+    "Date": "Jul 20"
+  },
+  {
+    "Vehicle": "NZZ 481",
+    "Country": "US",
+    "Speed": 6,
+    "Timestamp": "2016-07-21T07:38:03.136Z",
+    "Date": "Jul 21"
+  },
+  {
+    "Vehicle": "KNY 340",
+    "Country": "PH",
+    "Speed": 16,
+    "Timestamp": "2016-07-22T07:38:03.136Z",
+    "Date": "Jul 22"
+  },
+  {
+    "Vehicle": "LFM 285",
+    "Country": "PH",
+    "Speed": 17,
+    "Timestamp": "2016-07-23T07:38:03.136Z",
+    "Date": "Jul 23"
+  },
+  {
+    "Vehicle": "IZT 616",
+    "Country": "US",
+    "Speed": 10,
+    "Timestamp": "2016-07-24T07:38:03.136Z",
+    "Date": "Jul 24"
+  },
+  {
+    "Vehicle": "CWH 815",
+    "Country": "CA",
+    "Speed": 12,
+    "Timestamp": "2016-07-25T07:38:03.136Z",
+    "Date": "Jul 25"
+  },
+  {
+    "Vehicle": "PSV 642",
+    "Country": "CA",
+    "Speed": 18,
+    "Timestamp": "2016-07-26T07:38:03.136Z",
+    "Date": "Jul 26"
+  },
+  {
+    "Vehicle": "DSQ 623",
+    "Country": "US",
+    "Speed": 7,
+    "Timestamp": "2016-07-27T07:38:03.136Z",
+    "Date": "Jul 27"
+  },
+  {
+    "Vehicle": "XJE 738",
+    "Country": "AU",
+    "Speed": 13,
+    "Timestamp": "2016-07-28T07:38:03.136Z",
+    "Date": "Jul 28"
+  },
+  {
+    "Vehicle": "EQC 548",
+    "Country": "CA",
+    "Speed": 12,
+    "Timestamp": "2016-07-29T07:38:03.136Z",
+    "Date": "Jul 29"
+  },
+  {
+    "Vehicle": "IDI 968",
+    "Country": "AU",
+    "Speed": 12,
+    "Timestamp": "2016-07-30T07:38:03.136Z",
+    "Date": "Jul 30"
+  },
+  {
+    "Vehicle": "MNZ 150",
+    "Country": "PH",
+    "Speed": 14,
+    "Timestamp": "2016-07-31T07:38:03.136Z",
+    "Date": "Jul 31"
+  },
+  {
+    "Vehicle": "WZS 629",
+    "Country": "CA",
+    "Speed": 16,
+    "Timestamp": "2016-08-01T07:38:03.136Z",
+    "Date": "Aug 1"
+  },
+  {
+    "Vehicle": "WFA 788",
+    "Country": "US",
+    "Speed": 10,
+    "Timestamp": "2016-08-02T07:38:03.136Z",
+    "Date": "Aug 2"
+  },
+  {
+    "Vehicle": "UWN 972",
+    "Country": "CA",
+    "Speed": 6,
+    "Timestamp": "2016-08-03T07:38:03.136Z",
+    "Date": "Aug 3"
+  },
+  {
+    "Vehicle": "BGF 413",
+    "Country": "PH",
+    "Speed": 19,
+    "Timestamp": "2016-08-04T07:38:03.136Z",
+    "Date": "Aug 4"
+  },
+  {
+    "Vehicle": "ZIO 458",
+    "Country": "AU",
+    "Speed": 8,
+    "Timestamp": "2016-08-05T07:38:03.136Z",
+    "Date": "Aug 5"
+  },
+  {
+    "Vehicle": "LJH 328",
+    "Country": "CA",
+    "Speed": 19,
+    "Timestamp": "2016-08-06T07:38:03.136Z",
+    "Date": "Aug 6"
+  },
+  {
+    "Vehicle": "RXG 223",
+    "Country": "PH",
+    "Speed": 5,
+    "Timestamp": "2016-08-07T07:38:03.136Z",
+    "Date": "Aug 7"
+  },
+  {
+    "Vehicle": "CLZ 902",
+    "Country": "CA",
+    "Speed": 9,
+    "Timestamp": "2016-08-08T07:38:03.136Z",
+    "Date": "Aug 8"
+  },
+  {
+    "Vehicle": "SJQ 517",
+    "Country": "PH",
+    "Speed": 8,
+    "Timestamp": "2016-08-09T07:38:03.136Z",
+    "Date": "Aug 9"
+  },
+  {
+    "Vehicle": "HHG 709",
+    "Country": "CA",
+    "Speed": 6,
+    "Timestamp": "2016-08-10T07:38:03.136Z",
+    "Date": "Aug 10"
+  },
+  {
+    "Vehicle": "TIP 427",
+    "Country": "CA",
+    "Speed": 10,
+    "Timestamp": "2016-08-11T07:38:03.136Z",
+    "Date": "Aug 11"
+  },
+  {
+    "Vehicle": "VEN 809",
+    "Country": "AU",
+    "Speed": 6,
+    "Timestamp": "2016-08-12T07:38:03.136Z",
+    "Date": "Aug 12"
+  },
+  {
+    "Vehicle": "NEN 229",
+    "Country": "PH",
+    "Speed": 15,
+    "Timestamp": "2016-08-13T07:38:03.136Z",
+    "Date": "Aug 13"
+  },
+  {
+    "Vehicle": "OKK 436",
+    "Country": "US",
+    "Speed": 16,
+    "Timestamp": "2016-08-14T07:38:03.136Z",
+    "Date": "Aug 14"
+  },
+  {
+    "Vehicle": "IYG 512",
+    "Country": "AU",
+    "Speed": 13,
+    "Timestamp": "2016-08-15T07:38:03.136Z",
+    "Date": "Aug 15"
+  },
+  {
+    "Vehicle": "SMO 182",
+    "Country": "PH",
+    "Speed": 16,
+    "Timestamp": "2016-08-16T07:38:03.136Z",
+    "Date": "Aug 16"
+  },
+  {
+    "Vehicle": "VQU 541",
+    "Country": "CA",
+    "Speed": 15,
+    "Timestamp": "2016-08-17T07:38:03.136Z",
+    "Date": "Aug 17"
+  },
+  {
+    "Vehicle": "KNY 712",
+    "Country": "US",
+    "Speed": 6,
+    "Timestamp": "2016-08-18T07:38:03.136Z",
+    "Date": "Aug 18"
+  },
+  {
+    "Vehicle": "WFJ 161",
+    "Country": "US",
+    "Speed": 8,
+    "Timestamp": "2016-08-19T07:38:03.136Z",
+    "Date": "Aug 19"
+  },
+  {
+    "Vehicle": "GEK 627",
+    "Country": "US",
+    "Speed": 13,
+    "Timestamp": "2016-08-20T07:38:03.136Z",
+    "Date": "Aug 20"
+  },
+  {
+    "Vehicle": "JPT 101",
+    "Country": "US",
+    "Speed": 16,
+    "Timestamp": "2016-08-21T07:38:03.136Z",
+    "Date": "Aug 21"
+  },
+  {
+    "Vehicle": "OYF 670",
+    "Country": "PH",
+    "Speed": 13,
+    "Timestamp": "2016-08-22T07:38:03.136Z",
+    "Date": "Aug 22"
+  },
+  {
+    "Vehicle": "FQG 399",
+    "Country": "AU",
+    "Speed": 17,
+    "Timestamp": "2016-08-23T07:38:03.136Z",
+    "Date": "Aug 23"
+  },
+  {
+    "Vehicle": "ZJZ 727",
+    "Country": "AU",
+    "Speed": 19,
+    "Timestamp": "2016-08-24T07:38:03.136Z",
+    "Date": "Aug 24"
+  },
+  {
+    "Vehicle": "QRO 891",
+    "Country": "US",
+    "Speed": 9,
+    "Timestamp": "2016-08-25T07:38:03.136Z",
+    "Date": "Aug 25"
+  },
+  {
+    "Vehicle": "JXO 587",
+    "Country": "CA",
+    "Speed": 6,
+    "Timestamp": "2016-08-26T07:38:03.136Z",
+    "Date": "Aug 26"
+  },
+  {
+    "Vehicle": "LFK 794",
+    "Country": "AU",
+    "Speed": 11,
+    "Timestamp": "2016-08-27T07:38:03.136Z",
+    "Date": "Aug 27"
+  },
+  {
+    "Vehicle": "OZH 345",
+    "Country": "US",
+    "Speed": 12,
+    "Timestamp": "2016-08-28T07:38:03.136Z",
+    "Date": "Aug 28"
+  },
+  {
+    "Vehicle": "UAZ 412",
+    "Country": "US",
+    "Speed": 18,
+    "Timestamp": "2016-08-29T07:38:03.136Z",
+    "Date": "Aug 29"
+  },
+  {
+    "Vehicle": "MDG 970",
+    "Country": "AU",
+    "Speed": 20,
+    "Timestamp": "2016-08-30T07:38:03.136Z",
+    "Date": "Aug 30"
+  },
+  {
+    "Vehicle": "QLP 974",
+    "Country": "AU",
+    "Speed": 14,
+    "Timestamp": "2016-08-31T07:38:03.136Z",
+    "Date": "Aug 31"
+  },
+  {
+    "Vehicle": "BMX 265",
+    "Country": "AU",
+    "Speed": 16,
+    "Timestamp": "2016-09-01T07:38:03.136Z",
+    "Date": "Sep 1"
+  },
+  {
+    "Vehicle": "LZP 220",
+    "Country": "PH",
+    "Speed": 10,
+    "Timestamp": "2016-09-02T07:38:03.136Z",
+    "Date": "Sep 2"
+  },
+  {
+    "Vehicle": "ABA 675",
+    "Country": "US",
+    "Speed": 19,
+    "Timestamp": "2016-09-03T07:38:03.136Z",
+    "Date": "Sep 3"
+  },
+  {
+    "Vehicle": "DIB 957",
+    "Country": "AU",
+    "Speed": 16,
+    "Timestamp": "2016-09-04T07:38:03.136Z",
+    "Date": "Sep 4"
+  }
+]
