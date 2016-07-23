@@ -8,7 +8,7 @@
 </head>
 <body>
 	<div id="leaflet_map"></div>
-	<script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+	<script src="{{ base_url + '/jquery/dist/jquery.min.js' }}"></script>
 	<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
 	<script type="text/javascript">
 		'use strict'
@@ -17,14 +17,14 @@
 			mock = {{ JSON.stringify(mock) }},
 			socket = new WebSocket(`ws://${demo.ip}:${demo.socket_port}`),
 			mockSocket = new WebSocket(`ws://${demo.ip}:${mock.topology.socket_port}`),
-			mainMap = L.map('leaflet_map').setView([14.556981, 121.034378], 0),
+			mainMap = L.map('leaflet_map').setView([14.556981, 121.034378], 13),
 			devices = {},
 			gateway,
 			devicesData;
 
 		gateway = {{ JSON.stringify(gateway) }};
 		devicesData = {{ JSON.stringify(devices.concat(mockDevices)) }};
-		console.log(devicesData.length)
+		
 		L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
 		    id: 'rmauricio.0jhf51cc',
 		    attribution: '',
@@ -45,7 +45,7 @@
 
 		function socketOnMessage(event){
 			let data = JSON.parse(event.data);
-			console.log(data);
+			// console.log(data);
 			upsertDevice(data);
 		}
 
@@ -60,44 +60,51 @@
 				popup = '';
 			
 			popup = `<b>${item.device_info.name}</b><br/>`;
-			addressDtl.forEach((i) => {
-				popup += `${item.address[i]} `;
-			});
-			
-			item.weather.precipitation *= 100;
-			item.weather.humidity *= 100;
 
-			popup += `<br/><br/>`;
-			Object.keys(weatherDtl).forEach((i) => {
-				popup += `<div>${i}: ${item.weather[i]} ${weatherDtl[i]}</div>`;
-			});
+			if (! item.device_info.hasOwnProperty('mock_id')) {
+				addressDtl.forEach((i) => {
+					popup += `${item.address[i]} `;
+				});
+				
+				item.weather.precipitation *= 100;
+				item.weather.humidity *= 100;
+
+				popup += `<br/><br/>`;
+				Object.keys(weatherDtl).forEach((i) => {
+					popup += `<div>${i}: ${item.weather[i]} ${weatherDtl[i]}</div>`;
+				});
+			}
 
 			return popup;
 		}
 
 		function upsertDevice(item) {
-			item.id = item.device_info.hasOwnProperty('mock_id') ? item.device_info.mock_id : item.device_info._id;
+			let isMockDevice = item.device_info.hasOwnProperty('mock_id'),
+				deviceId = isMockDevice ? item.device_info.mock_id : item.device_info._id;
 			
-			let device = devices[item.id];
+			let popUpContent = generateHtmlPopup(item),
+				device = devices[deviceId];
 
-			if (typeof device !== 'undefined') {
+			if (devices.hasOwnProperty(deviceId)) {
 				device.setLatLng(item.coordinates);
-				device.setPopupContent(generateHtmlPopup(item))
+				device.setPopupContent(popUpContent);
 			} else {
-				let carIcon = L.icon({
-					    iconUrl: './images/car-32.png',
-					    iconRetinaUrl: './images/car-32.png',
+				let iconImage = (isMockDevice) ? 'car-32.png' : 'reekoh-48-b.png',
+					carIcon = L.icon({
+					    iconUrl: `./images/${iconImage}`,
+					    iconRetinaUrl: `./images/${iconImage}`,
 					    iconSize: [32, 32],
 					    iconAnchor: [16, 16],
 					    popupAnchor: [0, -15],
 					}),
 					markerOptions = {
-						icon: carIcon
+						icon: carIcon,
+						zIndexOffset: (isMockDevice) ? 1 : 2
 					}
 
-				devices[item.id] = L.marker(item.coordinates, markerOptions)
+				devices[deviceId] = L.marker(item.coordinates, markerOptions)
 												.addTo(mainMap)
-												.bindPopup(generateHtmlPopup(item));
+												.bindPopup(popUpContent);
 			}
 			
 		}

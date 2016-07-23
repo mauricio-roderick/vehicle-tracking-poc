@@ -86,6 +86,7 @@ electronApp.on('ready', function() {
 
 			// Setting the app router and static folder
 			expressApp.use(express.static(`${__dirname}/public`));
+			expressApp.use(express.static(`${__dirname}/node_modules`));
 			
 			expressApp.use(function (req, res, next) {
 				res.locals.base_url = BASE_URL;

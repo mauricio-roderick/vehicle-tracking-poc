@@ -3,7 +3,7 @@
 var request = require('request'),
 	fs = require('fs'),
 	mongoose = require('mongoose'),
-	mongoId = mongoose.Types.ObjectId,
+	MongoId = mongoose.Types.ObjectId,
 	async = require('async'),
 	moment = require('moment'),
 	Chance = require('chance'),
@@ -36,7 +36,7 @@ var generatePlateName = () => {
 		plate = `${platePrefix} ${plateNum}`;
 
 	return plate;
-}
+};
 
 var generateDeviceMovement = (device) => {
 	let deviceMovement = {
@@ -52,18 +52,20 @@ var generateDeviceMovement = (device) => {
 		let timestamp = device.date.add('30', 'seconds');
 
 		pbi = {
-			"Vehicle": device.name,
-			"Country": device.country,
-			"Speed": 16,
-			"Timestamp": timestamp.toISOString(),
-			"Date": timestamp.format('MMM D')
+			'Vehicle': device.name,
+			'Country': device.country,
+			'Speed': 16,
+			'Timestamp': timestamp.toISOString(),
+			'Date': timestamp.format('MMM D')
 		};
 
 		deviceMovement.pbi.push(pbi);
 		
 		mongo = JSON.parse(JSON.stringify(mongoDbItem));
 		mongo.device_info.mock_id = device.mock_id;
+		mongo.device_info.metadata.plate = device.name;
 		mongo.device_info.name = device.name;
+		mongo.address.country = device.country;
 		mongo.timestamp = timestamp.toISOString();
 		mongo.speed = chance.floating({
 			min: 20,
@@ -81,7 +83,7 @@ var generateDeviceMovement = (device) => {
 	}
 
 	return deviceMovement;
-}
+};
 
 async.eachLimit(Object.keys(mock.countries), 1, (country, next) => {
 	let numOfMarkers = chance.integer(mock.device_count),
@@ -105,24 +107,26 @@ async.eachLimit(Object.keys(mock.countries), 1, (country, next) => {
 		}
 
 		countryDevices[country].push({
-			mock_id: new mongoId,
+			mock_id: new MongoId(),
 			name: plate,
 		});
 	}
+
+	let mockDeviceMovement = (device) => {
+		device.country = country;
+		device.date = startDate;
+		
+		let deviceMovement = generateDeviceMovement(device);
+
+		powerBiData = powerBiData.concat(deviceMovement.pbi);
+		mongoDbData = mongoDbData.concat(deviceMovement.mongo);
+	};
 
 	while(startDate.isBefore(curDate)) {
 		let numOfDevices = chance.integer(numOfDevicesPerDay),
 			devices = chance.pickset(countryDevices[country], numOfDevices);
 		
-		devices.forEach((device) => {
-			device.country = country;
-			device.date = startDate;
-			
-			let deviceMovement = generateDeviceMovement(device);
-
-			powerBiData = powerBiData.concat(deviceMovement.pbi);
-			mongoDbData = mongoDbData.concat(deviceMovement.mongo);
-		});
+		devices.forEach(mockDeviceMovement);
 
 		startDate.add(1, 'day');
 	}
@@ -135,6 +139,7 @@ async.eachLimit(Object.keys(mock.countries), 1, (country, next) => {
 		mongoDataClone = JSON.parse(JSON.stringify(mongoDbData)),
 		pbiBatchData = [],
 		mongoBatchData = [],
+		itemsPerBatch = 50,
 		powerBITask;
 	
 	async.waterfall([
@@ -142,8 +147,8 @@ async.eachLimit(Object.keys(mock.countries), 1, (country, next) => {
 			async.whilst(
 			    () => { return (pbiDataClone.length > 0); },
 			    (cb) => {
-			        pbiBatchData.push(pbiDataClone.splice(0, 100));
-			        mongoBatchData.push(mongoDataClone.splice(0, 100));
+			        pbiBatchData.push(pbiDataClone.splice(0, itemsPerBatch));
+			        mongoBatchData.push(mongoDataClone.splice(0, itemsPerBatch));
 			        cb();
 			    },
 			    (err) => {
@@ -185,10 +190,10 @@ async.eachLimit(Object.keys(mock.countries), 1, (country, next) => {
 				});
 			}, (err) => {
 				if(! err) {
-					console.log('Created Powerbi records.')
+					console.log('Created Powerbi records.');
 				}
 				next(err);
-			})
+			});
 		},
 		(next) => {
 			let mongoose = require('mongoose'),
@@ -231,10 +236,10 @@ async.eachLimit(Object.keys(mock.countries), 1, (country, next) => {
 				});
 			}, (err) => {
 				if(! err) {
-					console.log('Mongo Db & Powerbi records.')
+					console.log('Mongo Db & Powerbi records.');
 				}
 				next(err);
-			})
+			});
 		}
 	], (err) => {
 		if(err) {
@@ -248,6 +253,6 @@ async.eachLimit(Object.keys(mock.countries), 1, (country, next) => {
 		// });
 		
 		console.log(`Done importing ${powerBiData.length} records`);
-	})
+	});	
 });
 

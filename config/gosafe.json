@@ -17,11 +17,5 @@
   "azimuth": 0,
   "altitude": 37,
   "hdop": 0.85,
-  "vdop": 0.35,
-  "rkh_device_info": {
-	"_id": "567827489028376",
-	"name": "GoSafe Test",
-	"metadata": {},
-	"state": {}
-  }
+  "vdop": 0.35
 }

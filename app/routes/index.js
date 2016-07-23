@@ -50,8 +50,8 @@ router.get('/index', function(req, res, next) {
 			});
 		},
 		mockDevices: (next) => {
-			aggrePipeline[0]['$match']['device_info.mock_id']['$exists'] = true;
-			aggrePipeline[2]['$group']['_id'] = '$device_info.mock_id';
+			aggrePipeline[0].$match['device_info.mock_id'].$exists = true;
+			aggrePipeline[2].$group._id = '$device_info.mock_id';
 
 			Gps.aggregate(aggrePipeline, (err, mock_devices) => {
 				next(err, mock_devices);
@@ -66,43 +66,45 @@ router.get('/index', function(req, res, next) {
 		
 		let params = result,
 			url = `http://${mock.topology.instance}.reekoh.com:${mock.topology.http_port}/${mock.topology.topic}`,
-			deviceMarkers = [],
 			interval,
-			moveDevice = function (marker, done){
+			moveMockDevices = () => {
+				async.mapLimit(result.mockDevices, 2, 
+					(marker, next) => {
+						let increment = chance.floating({
+								max: 0.001,
+								min: 0.0001
+							});
 
-				let increment = chance.floating({
-						max: 0.001,
-						min: 0.0001
+						marker.device = marker.device_info._id;
+						marker.coordinates.lat += chance.bool() ? -(increment) : (increment);
+						marker.coordinates.lon += chance.bool() ? -(increment) : (increment);
+						marker.timestamp = new Date().toJSON();
+						marker.speed = chance.integer({min: 20, max: 30});
+
+						console.log(marker.device);
+						console.log(marker.coordinates);
+						request.post({
+							url: url,
+							json: marker
+						}, (err, response, body) => {
+							next(null, marker);
+						});
+					}, 
+					(err, mockDevices) => {
+						console.log('Updated device locations.');
+
+						result.mockDevices = mockDevices;
+						setTimeout(moveMockDevices, config.mock.movement_interval);
 					});
-
-				marker.device = marker.device_info._id;
-				marker.coordinates.lat += chance.bool() ? -(increment) : (increment);
-				marker.coordinates.lon += chance.bool() ? -(increment) : (increment);
-				marker.timestamp = new Date().toJSON();
-				marker.speed = chance.integer({min: 20, max: 30});
-
-				delete marker._id;
-				deviceMarkers[marker.mock_id] = marker;
-
-				request.post({
-					url: url,
-					json: marker
-				}, (err, response, body) => {
-					
-					done();
-				});
 			};
 
 		if(result.mockDevices.length) {
-			interval = setInterval(function (){
-				async.eachLimit(result.mockDevices, 1, moveDevice, () => {
-					console.log('Updated device locations.');
-				});
-			}, config.mock.movement_interval);
+			console.log(`Found ${result.mockDevices.length} mock devices.`);
+
+			setTimeout(moveMockDevices, config.mock.movement_interval);			
 		} else {
 			console.log('No mock devices found');
 		}
-
 
 		params.mock = mock;
 		params.demo = demo;
