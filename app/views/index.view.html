@@ -100,7 +100,7 @@
 					}),
 					markerOptions = {
 						icon: carIcon,
-						zIndexOffset: (isMockDevice) ? 1 : 2
+						zIndexOffset: (isMockDevice) ? 1 : 1000
 					}
 
 				devices[deviceId] = L.marker(item.device_data.coordinates, markerOptions)
