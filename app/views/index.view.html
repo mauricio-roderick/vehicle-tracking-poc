@@ -17,7 +17,7 @@
 			mock = {{ JSON.stringify(mock) }},
 			socket = new WebSocket(`ws://${demo.ip}:${demo.socket_port}`),
 			mockSocket = new WebSocket(`ws://${demo.ip}:${mock.topology.socket_port}`),
-			mainMap = L.map('leaflet_map').setView([14.556981, 121.034378], 0),
+			mainMap = L.map('leaflet_map').setView([14.556981, 121.034378], 13),
 			devices = {},
 			gateway,
 			devicesData;
