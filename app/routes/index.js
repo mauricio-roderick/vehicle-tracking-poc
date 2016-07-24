@@ -34,11 +34,10 @@ router.get('/index', function(req, res, next) {
 				$group: {
 					_id: '$device_info._id',
 					device_info: { $first: '$device_info' },
-					coordinates: { $first: '$coordinates' },
+					device_data: { $first: '$device_data' },
 					timestamp: { $first: '$timestamp' },
 					address: { $first: '$address' },
 					weather: { $first: '$weather' },
-					speed: { $first: '$speed' },
 				}
 			}
 		];
@@ -101,7 +100,7 @@ router.get('/index', function(req, res, next) {
 		if(result.mockDevices.length) {
 			console.log(`Found ${result.mockDevices.length} mock devices.`);
 
-			setTimeout(moveMockDevices, config.mock.movement_interval);			
+			// setTimeout(moveMockDevices, config.mock.movement_interval);			
 		} else {
 			console.log('No mock devices found');
 		}

@@ -17,7 +17,7 @@
 			mock = {{ JSON.stringify(mock) }},
 			socket = new WebSocket(`ws://${demo.ip}:${demo.socket_port}`),
 			mockSocket = new WebSocket(`ws://${demo.ip}:${mock.topology.socket_port}`),
-			mainMap = L.map('leaflet_map').setView([14.556981, 121.034378], 13),
+			mainMap = L.map('leaflet_map').setView([14.556981, 121.034378], 0),
 			devices = {},
 			gateway,
 			devicesData;
@@ -87,7 +87,7 @@
 				device = devices[deviceId];
 
 			if (devices.hasOwnProperty(deviceId)) {
-				device.setLatLng(item.coordinates);
+				device.setLatLng(item.device_data.coordinates);
 				device.setPopupContent(popUpContent);
 			} else {
 				let iconImage = (isMockDevice) ? 'car-32.png' : 'reekoh-48-b.png',
@@ -103,7 +103,7 @@
 						zIndexOffset: (isMockDevice) ? 1 : 2
 					}
 
-				devices[deviceId] = L.marker(item.coordinates, markerOptions)
+				devices[deviceId] = L.marker(item.device_data.coordinates, markerOptions)
 												.addTo(mainMap)
 												.bindPopup(popUpContent);
 			}
