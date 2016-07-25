@@ -62,7 +62,7 @@ electronApp.on('ready', function() {
 				height: 768
 			});
 
-			electronConfig.setAppMenu();
+			electronConfig.setAppMenu(electronApp);
 			//mainWindow.toggleDevTools();
 
 			done(null, mainWindow);
