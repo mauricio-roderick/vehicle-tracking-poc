@@ -1,7 +1,6 @@
 'use strict';
 
 const favicon = require('serve-favicon');
-const debug = require('debug')('express-test:server');
 
 const config = require('./config/config'),
 	BASE_URL = `http://127.0.0.1:${config.port}`;

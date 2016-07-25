@@ -2,7 +2,7 @@
 
 var config = {
 	app: {
-		title: 'Reekoh - GPS Tracking'
+		title: 'Reekoh - Connected Car Demo'
 	},
 	port: 18358,
 	demo: {
@@ -14,7 +14,7 @@ var config = {
     mongo: {
         local_url: 'mongodb://127.0.0.1:27017/local',
         test_url: 'mongodb://reekohdev:Reekoh2016@ds015398.mlab.com:15398/reekoh-mongo-test',
-        url: process.env.MONGO_URL || 'mongodb://reekohdev:Reekoh2016@ds015398.mlab.com:15398/reekoh-mongo-test',
+        url: process.env.MONGO_URL || 'mongodb://reekohdev:Reekoh2016@ds015398.mlab.com:15398/reekoh-mongo-test'
     },
 	mock: {
 		topology: {
