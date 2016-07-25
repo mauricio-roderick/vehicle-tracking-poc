@@ -7,29 +7,8 @@ var gpsSchema = new Schema({
 	device_info: {
 		type: Schema.Types.Mixed
 	},
-	timestamp: {
-		type: Date,
-	},
-	speed: {
-		type: Number
-	},
-	coordinates: {
-		lat: {
-			type: Number
-		},
-		lon: {
-			type: Number
-		}
-	},
-	lat_dir: {
-		type: String
-	},
-	lng_dir: {
-		type: String
-	},
-	altitude: {
-		type: Number,
-		trim: true
+	device_data: {
+		type: Schema.Types.Mixed
 	},
 	address: {
 		country: {
@@ -64,6 +43,10 @@ var gpsSchema = new Schema({
 		precip_intensity: {
 			type: String
 		}
+	},
+	timestamp: {
+		type: Date,
+		default: Date.now
 	}
 });
 

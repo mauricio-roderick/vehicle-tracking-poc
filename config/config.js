@@ -23,15 +23,15 @@ var config = {
 			socket_port: 8065,
 			topic: 'reekoh/data'
 		},
-		movement_interval: 3000,
-		days_before_current: 10,
+		movement_interval: 30000,
+		days_before_current: 15,
 		movement_count: {
-			min: 5,
-			max: 10
+			min: 10,
+			max: 20
 		},
 		device_count: {
-			min: 5,
-			max: 10
+			min: 4,
+			max: 8
 		},
 		countries: {
 			'PH' : {

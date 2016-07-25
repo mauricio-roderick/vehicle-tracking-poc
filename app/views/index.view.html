@@ -8,8 +8,15 @@
 </head>
 <body>
 	<div id="leaflet_map"></div>
-	<script src="https://cdn.jsdelivr.net/jquery/2.2.4/jquery.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/leaflet/0.7.7/leaflet.js"></script>
+
+	<div class="preloader">
+		<div class="spinner">
+			<div class="cube1"></div>
+			<div class="cube2"></div>
+		</div>
+	</div>
+	<script src="{{ base_url + '/jquery/dist/jquery.min.js' }}"></script>
+	<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
 	<script type="text/javascript">
 		'use strict'
 
@@ -87,7 +94,7 @@
 				device = devices[deviceId];
 
 			if (devices.hasOwnProperty(deviceId)) {
-				device.setLatLng(item.coordinates);
+				device.setLatLng(item.device_data.coordinates);
 				device.setPopupContent(popUpContent);
 			} else {
 				let iconImage = (isMockDevice) ? 'car-32.png' : 'reekoh-48-b.png',
@@ -100,10 +107,10 @@
 					}),
 					markerOptions = {
 						icon: carIcon,
-						zIndexOffset: (isMockDevice) ? 1 : 2
+						zIndexOffset: (isMockDevice) ? 1 : 1000
 					}
 
-				devices[deviceId] = L.marker(item.coordinates, markerOptions)
+				devices[deviceId] = L.marker(item.device_data.coordinates, markerOptions)
 												.addTo(mainMap)
 												.bindPopup(popUpContent);
 			}

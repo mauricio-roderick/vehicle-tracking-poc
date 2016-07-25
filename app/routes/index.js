@@ -34,11 +34,10 @@ router.get('/index', function(req, res, next) {
 				$group: {
 					_id: '$device_info._id',
 					device_info: { $first: '$device_info' },
-					coordinates: { $first: '$coordinates' },
+					device_data: { $first: '$device_data' },
 					timestamp: { $first: '$timestamp' },
 					address: { $first: '$address' },
 					weather: { $first: '$weather' },
-					speed: { $first: '$speed' },
 				}
 			}
 		];
@@ -76,13 +75,13 @@ router.get('/index', function(req, res, next) {
 							});
 
 						marker.device = marker.device_info._id;
-						marker.coordinates.lat += chance.bool() ? -(increment) : (increment);
-						marker.coordinates.lon += chance.bool() ? -(increment) : (increment);
-						marker.timestamp = new Date().toJSON();
-						marker.speed = chance.integer({min: 20, max: 30});
+						marker.device_data.coordinates.lat += chance.bool() ? -(increment) : (increment);
+						marker.device_data.coordinates.lon += chance.bool() ? -(increment) : (increment);
+						marker.device_data.speed = chance.integer({min: 20, max: 30});
+						marker.timestamp = moment().toISOString();
 
-						console.log(marker.device);
-						console.log(marker.coordinates);
+						delete marker._id;
+						
 						request.post({
 							url: url,
 							json: marker
@@ -101,7 +100,7 @@ router.get('/index', function(req, res, next) {
 		if(result.mockDevices.length) {
 			console.log(`Found ${result.mockDevices.length} mock devices.`);
 
-			setTimeout(moveMockDevices, config.mock.movement_interval);			
+			// setTimeout(moveMockDevices, config.mock.movement_interval);			
 		} else {
 			console.log('No mock devices found');
 		}
