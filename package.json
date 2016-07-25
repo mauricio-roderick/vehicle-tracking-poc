@@ -9,9 +9,9 @@
     "start": "node ./start-electron.js",
     "clr_start": "sudo /etc/init.d/nscd restart && node ./start-electron.js",
     "build": "rm -rf public/dist/ && npm run build:dar && npm run build:lin && npm run build:win",
-    "build:lin": "electron-packager . gps --platform=linux --arch=x64 --out=public/dist --asar --overwrite",
-    "build:win": "electron-packager . gps --platform=win32 --arch=x64 --out=public/dist --asar --overwrite",
-    "build:dar": "electron-packager . gps --platform=darwin --arch=x64 --out=public/dist --asar --overwrite"
+    "build:lin": "electron-packager . gps --platform=linux --arch=x64 --out=build --asar --overwrite",
+    "build:win": "electron-packager . gps --platform=win32 --arch=x64 --out=build --asar --overwrite",
+    "build:dar": "electron-packager . gps --platform=darwin --arch=x64 --out=build --asar --overwrite"
   },
   "dependencies": {
     "async": "^1.5.2",
