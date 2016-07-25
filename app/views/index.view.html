@@ -3,18 +3,21 @@
 <head>
 	<title></title>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/leaflet/0.7.7/leaflet.css" />
+	<link rel="stylesheet" href="{{ base_url + '/css/spin.css' }}" />
+	<!-- <link rel="stylesheet" href="{{ base_url + '/css/preloader.css' }}" /> -->
 	<link rel="stylesheet" href="{{ base_url + '/css/styles.css' }}" />
 	
 </head>
 <body>
 	<div id="leaflet_map"></div>
-	<div class="preloader">
-		<div class="cont">
+	<div class="splash">
+		<img src="{{ base_url + '/images/reekoh-192x192.png'}}" class="spin" />
+		<!-- <div class="preloader">
 			<div class="spinner">
 				<div class="cube1"></div>
 				<div class="cube2"></div>
 			</div>
-		</div>
+		</div> -->
 	</div>
 	<script src="https://cdn.jsdelivr.net/jquery/2.2.4/jquery.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/leaflet/0.7.7/leaflet.js"></script>
@@ -23,7 +26,7 @@
 
 		$(document).ready(function () {
 			setTimeout(function () {
-				$('.preloader').fadeOut();
+				$('.splash').fadeOut();
 			}, 3000);
 		});
 
@@ -31,7 +34,7 @@
 			mock = {{ JSON.stringify(mock) }},
 			socket = new WebSocket(`ws://${demo.ip}:${demo.socket_port}`),
 			mockSocket = new WebSocket(`ws://${demo.ip}:${mock.topology.socket_port}`),
-			mainMap = L.map('leaflet_map').setView([14.556981, 121.034378], 13),
+			mainMap = L.map('leaflet_map').setView([14.5651, 121.0220], 11),
 			devices = {},
 			gateway,
 			devicesData;
