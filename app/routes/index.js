@@ -100,7 +100,7 @@ router.get('/index', function(req, res, next) {
 		if(result.mockDevices.length) {
 			console.log(`Found ${result.mockDevices.length} mock devices.`);
 
-			setTimeout(moveMockDevices, config.mock.movement_interval);			
+			// setTimeout(moveMockDevices, config.mock.movement_interval);			
 		} else {
 			console.log('No mock devices found');
 		}
