@@ -63,6 +63,7 @@ electronApp.on('ready', function() {
 			});
 
 			electronConfig.setAppMenu();
+			//mainWindow.toggleDevTools();
 
 			done(null, mainWindow);
 		},
