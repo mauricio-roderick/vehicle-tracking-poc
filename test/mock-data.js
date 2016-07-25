@@ -11,7 +11,6 @@ var request = require('request'),
 	configPath = '../config',
 	PowerBITask = require('./powerBITask'),
 	config = require(`${configPath}/config.js`),
-	gosafeJSON = require(`${configPath}/gosafe.json`),
 	mongoDbItem = require(`${configPath}/mongoDbItem.json`),
 	mock = config.mock,
 	demo = config.demo,
@@ -67,17 +66,15 @@ var generateDeviceMovement = (device) => {
 		mongo.device_info.name = device.name;
 		mongo.address.country = device.country;
 		mongo.timestamp = timestamp.toISOString();
-		mongo.speed = chance.floating({
+		mongo.device_data.speed = chance.floating({
 			min: 20,
 			max: 30,
 			fixed: 2
 		});
-		mongo.coordinates = {
+		mongo.device_data.coordinates = {
 			lat: chance.floating(mock.countries[device.country].border.lat),
 			lon: chance.floating(mock.countries[device.country].border.lon)
 		};
-
-		delete mongo._id;
 
 		deviceMovement.mongo.push(mongo);
 	}
