@@ -27,7 +27,7 @@ router.get('/index', function(req, res, next) {
 			},
 			{ 
 				$sort: { 
-					timestamp: 1
+					timestamp: -1
 				} 
 			},
 			{
