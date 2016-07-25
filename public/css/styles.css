@@ -3,17 +3,22 @@ html, body, #leaflet_map{
 	margin: 0;
 	padding: 0;
 }
-#leaflet_map {
-}
 
 .preloader {
-	display: none;
+	background: #007FFF;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    z-index: 1000;
+}
+.preloader .cont {
     width: 150px;
     height: 150px;
     position: absolute;
     top: 0;
-    left: 0;
     bottom: 60px;
+    left: 0;
     right: 0;
     margin: auto;
     -webkit-user-select: none;
@@ -30,9 +35,10 @@ html, body, #leaflet_map{
 }
 
 .cube1, .cube2 {
-  background: #000 url(../images/preloader-2.png) no-repeat;
-  width: 50px;
-  height: 50px;
+  background: url(../images/preloader.png) no-repeat;
+  background-size: cover;
+  width: 75px;
+  height: 75px;
   position: absolute;
   top: 0;
   left: 0;
@@ -47,25 +53,25 @@ html, body, #leaflet_map{
 }
 
 @-webkit-keyframes sk-cubemove {
-  25% { -webkit-transform: translateX(100px) rotate(-90deg) scale(0.5) }
-  50% { -webkit-transform: translateX(100px) translateY(100px) rotate(-180deg) }
-  75% { -webkit-transform: translateX(0px) translateY(100px) rotate(-270deg) scale(0.5) }
+  25% { -webkit-transform: translateX(75px) rotate(-90deg) scale(0.5) }
+  50% { -webkit-transform: translateX(75px) translateY(75px) rotate(-180deg) }
+  75% { -webkit-transform: translateX(0px) translateY(75px) rotate(-270deg) scale(0.5) }
   100% { -webkit-transform: rotate(-360deg) }
 }
 
 @keyframes sk-cubemove {
   25% { 
-    transform: translateX(100px) rotate(-90deg) scale(0.5);
-    -webkit-transform: translateX(100px) rotate(-90deg) scale(0.5);
+    transform: translateX(75px) rotate(-90deg) scale(0.5);
+    -webkit-transform: translateX(75px) rotate(-90deg) scale(0.5);
   } 50% { 
-    transform: translateX(100px) translateY(100px) rotate(-179deg);
-    -webkit-transform: translateX(100px) translateY(100px) rotate(-179deg);
+    transform: translateX(75px) translateY(75px) rotate(-179deg);
+    -webkit-transform: translateX(75px) translateY(75px) rotate(-179deg);
   } 50.1% { 
-    transform: translateX(100px) translateY(100px) rotate(-180deg);
-    -webkit-transform: translateX(100px) translateY(100px) rotate(-180deg);
+    transform: translateX(75px) translateY(75px) rotate(-180deg);
+    -webkit-transform: translateX(75px) translateY(75px) rotate(-180deg);
   } 75% { 
-    transform: translateX(0px) translateY(100px) rotate(-270deg) scale(0.5);
-    -webkit-transform: translateX(0px) translateY(100px) rotate(-270deg) scale(0.5);
+    transform: translateX(0px) translateY(75px) rotate(-270deg) scale(0.5);
+    -webkit-transform: translateX(0px) translateY(75px) rotate(-270deg) scale(0.5);
   } 100% { 
     transform: rotate(-360deg);
     -webkit-transform: rotate(-360deg);
