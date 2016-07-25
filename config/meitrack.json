@@ -1,0 +1,23 @@
+{
+	"device": "567827489028376",
+	"is_data": true,
+	"header": "$$N146",
+	"device": "863158027366048",
+	"message_type": "AAA",
+	"raw_data": "$$N146,863158027376492,AAA,35,14.556898,121.034236,160722121208,A,7,28,0,62,1.3,43,280,2424,515|2|4F24|2FC1,0000,0000|0000|0000|096F|0000,00000001,*39\r\n",
+	"event_code": 35,
+	"coordinates": [ 121.034236, 14.556898 ],
+	"dtm": "Fri Jul 22 2016 12:12:08 GMT+0800 (PHT)",
+	"status": "A",
+	"satellite_no": 7,
+	"signal": 28,
+	"speed": 0,
+	"direction": 62,
+	"accuracy": 1,
+	"altitude": 43,
+	"mileage": 280,
+	"run_time": "2424",
+	"base_station": "515|2|4F24|2FC1",
+	"io_status": "0000",
+	"analog_input": "0000|0000|0000|096F|0000"
+}
