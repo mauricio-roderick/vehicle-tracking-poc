@@ -57,9 +57,10 @@
 					'humidity': '%', 
 					'wind': 'mph'
 				},
+				plate = item.device_info.metadata.hasOwnProperty('plate') ? item.device_info.metadata.plate : item.device_info.name,
 				popup = '';
 			
-			popup = `<b>${item.device_info.name}</b><br/>`;
+			popup = `<b>${plate}</b><br/>`;
 
 			if (! item.device_info.hasOwnProperty('mock_id')) {
 				addressDtl.forEach((i) => {
