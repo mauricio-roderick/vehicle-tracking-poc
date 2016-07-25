@@ -4,10 +4,10 @@ html, body, #leaflet_map{
 	padding: 0;
 }
 #leaflet_map {
-	display: none;
 }
 
 .preloader {
+	display: none;
     width: 150px;
     height: 150px;
     position: absolute;
