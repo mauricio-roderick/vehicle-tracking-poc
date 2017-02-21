@@ -4,11 +4,11 @@ var config = {
 	app: {
 		title: 'Reekoh - Connected Car Demo'
 	},
-	port: 18358,
+	port: 18359,
 	demo: {
 		ip: '52.91.146.12',
 		instance: 'demo1',
-		socket_port: 8068,
+		socket_port: 8062,
 		topic: 'reekoh/data'
 	},
     mongo: {
@@ -17,6 +17,7 @@ var config = {
         url: process.env.MONGO_URL || 'mongodb://reekohdev:Reekoh2016@ds015398.mlab.com:15398/reekoh-mongo-test'
     },
 	mock: {
+		enable: false,
 		topology: {
 			instance: 'demo1',
 			http_port: 8064,

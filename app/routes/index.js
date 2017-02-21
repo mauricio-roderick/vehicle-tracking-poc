@@ -44,11 +44,17 @@ router.get('/index', function(req, res, next) {
 
 	async.series({
 		devices: (next) => {
+			// return next(null, []);
+			
 			Gps.aggregate(aggrePipeline, (err, real_devices) => {
 				next(err, real_devices);
 			});
 		},
 		mockDevices: (next) => {
+			if (mock.enable) {
+				return next(null, []);
+			}
+
 			aggrePipeline[0].$match['device_info.mock_id'].$exists = true;
 			aggrePipeline[2].$group._id = '$device_info.mock_id';
 

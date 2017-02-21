@@ -33,7 +33,7 @@
 		var demo = {{ JSON.stringify(demo) }},
 			mock = {{ JSON.stringify(mock) }},
 			socket = new WebSocket(`ws://${demo.ip}:${demo.socket_port}`),
-			mockSocket = new WebSocket(`ws://${demo.ip}:${mock.topology.socket_port}`),
+			mockSocket = null,
 			mainMap = L.map('leaflet_map').setView([14.5651, 121.0220], 11),
 			devices = {},
 			gateway,
@@ -48,10 +48,13 @@
 		    accessToken: 'pk.eyJ1Ijoicm1hdXJpY2lvIiwiYSI6ImNpcWJ1anZ0ODAwcnJmb25lYm45a3VvMTQifQ.R5nMyg7GXh37uXzDzTgY7w'
 		}).addTo(mainMap);
 
-		mockSocket.onopen = function (event) {
-			console.log('Mock socket connected!');
+		if (mock.enable) {
+			mockSocket = new WebSocket(`ws://${demo.ip}:${mock.topology.socket_port}`)
+			mockSocket.onopen = function (event) {
+				console.log('Mock socket connected!');
 
-			mockSocket.onmessage = socketOnMessage;
+				mockSocket.onmessage = socketOnMessage;
+			}
 		}
 
 		socket.onopen = function (event) {
@@ -79,9 +82,13 @@
 			
 			popup = `<b>${plate}</b><br/>`;
 
+			// console.log(JSON.stringify(item.address))
+			// console.log(typeof item.address)
 			if (! item.device_info.hasOwnProperty('mock_id')) {
 				addressDtl.forEach((i) => {
-					popup += `${item.address[i]} `;
+					if(item.address && item.address.hasOwnProperty(i)) {
+						popup += `${item.address[i]} `;
+					}
 				});
 				
 				item.weather.precipitation *= 100;
